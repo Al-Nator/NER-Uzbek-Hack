@@ -1,0 +1,2 @@
+run_id,git_commit,data_hashes,encoder,revision,tag_scheme,head,decoder,seed,micro_precision,micro_recall,micro_f1,macro_f1,org_f1,name_f1,geo_f1,status
+b00_official,,,distilbert/distilbert-base-multilingual-cased,45c032ab32cc946ad88a166f7cb282f58c753c2e,bio,softmax,greedy,42,,,,,,,,planned

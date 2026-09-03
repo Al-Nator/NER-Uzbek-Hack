@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "task": "exact-span named entity recognition",
+  "schema": {
+    "record_fields": [
+      "hash",
+      "text",
+      "entities"
+    ],
+    "entity_fields": [
+      "label",
+      "start",
+      "end"
+    ],
+    "labels": [
+      "GEO",
+      "NAME",
+      "ORG"
+    ],
+    "offsets": "zero-based character offsets; end is exclusive; offsets refer to text"
+  },
+  "documentation": {
+    "path": "README.md",
+    "sha256": "1a951688eb07dc0ab37b8b13aa3f281d966a1af5eb01a944bc22820c328c55d7"
+  },
+  "assets": [
+    {
+      "path": "API.md",
+      "sha256": "06e92596da4c553b364aaae1afef22992d2b9bbfe97329cddbfc57a04fe6f04c"
+    },
+    {
+      "path": "LABELING_GUIDE.md",
+      "sha256": "d41f8b36fd0bec89833756f7f3ef7ed1d3534460cb7e2f0cd803f83dc5f5a6b8"
+    },
+    {
+      "path": "README.md",
+      "sha256": "1a951688eb07dc0ab37b8b13aa3f281d966a1af5eb01a944bc22820c328c55d7"
+    },
+    {
+      "path": "baseline/__init__.py",
+      "sha256": "4ddc36818573dd0dea0e0d9a84865171d9fc93846170f1b4bd871c659aef688a"
+    },
+    {
+      "path": "baseline/common.py",
+      "sha256": "4276bbde702a7f4489f1af8664ce56c4adde14f0f8c10e35301f1d778917af92"
+    },
+    {
+      "path": "baseline/predict.py",
+      "sha256": "ac53f552cc41dcb2bd9f43d2e59ef42399d5a9530bbb4a3c7a3ac7e620004b9c"
+    },
+    {
+      "path": "baseline/train.py",
+      "sha256": "2bb9fd2b3368f51e737796e4fec876f0c0bd773d8a66c0195ef52b1363c7e169"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "09adaeac244f5e3f732b5f454fd9fe89b0a66781ef99b52e865e84db38f23dc2"
+    },
+    {
+      "path": "scripts/check_service.py",
+      "sha256": "fb37276c205172f90e0eb830bd6f4ac3f9f6fd856c19ea74baba324e5f1a3e3f"
+    },
+    {
+      "path": "scripts/evaluate.py",
+      "sha256": "a060cbcaad2a084e8d66cb8fa6e50f17e0bad746f7c5a7e8e8e8e6e92f71f6e4"
+    },
+    {
+      "path": "scripts/evaluate_service.py",
+      "sha256": "c5c7ce4eaa4d781054b7ac00475c8ae053c07be8a4ff366bdd993f10bd170f3b"
+    }
+  ],
+  "splits": {
+    "train": {
+      "path": "data/train.jsonl",
+      "sha256": "b3281c93aeb28353384b749627a4a82217cdd250a607a3ea3803363b31718346",
+      "records": 13000,
+      "records_with_entities": 10614,
+      "entities": 66083,
+      "entities_by_label": {
+        "GEO": 21445,
+        "NAME": 21218,
+        "ORG": 23420
+      },
+      "documents_by_label_signature": {
+        "EMPTY": 2386,
+        "GEO": 1396,
+        "GEO+NAME": 449,
+        "GEO+NAME+ORG": 1703,
+        "GEO+ORG": 1900,
+        "NAME": 1702,
+        "NAME+ORG": 966,
+        "ORG": 2498
+      }
+    },
+    "dev": {
+      "path": "data/dev.jsonl",
+      "sha256": "7e5d96a1de83311e3acb33a3c28ed8e13783141143c8eb83e86fb329a795e4d0",
+      "records": 1500,
+      "records_with_entities": 1225,
+      "entities": 7698,
+      "entities_by_label": {
+        "GEO": 2720,
+        "NAME": 2319,
+        "ORG": 2659
+      },
+      "documents_by_label_signature": {
+        "EMPTY": 275,
+        "GEO": 161,
+        "GEO+NAME": 52,
+        "GEO+NAME+ORG": 197,
+        "GEO+ORG": 219,
+        "NAME": 196,
+        "NAME+ORG": 112,
+        "ORG": 288
+      }
+    }
+  }
+}

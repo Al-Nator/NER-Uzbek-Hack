@@ -1,0 +1,27 @@
+experiment:
+  run_id: e10_xlmr_base_bio
+  data_config: configs/data/official.yaml
+  output_root: runs
+  primary_metric: exact_micro_f1
+  encoder:
+    name: FacebookAI/xlm-roberta-base
+    revision: e73636d4f797dec63c3081bb6ed5c7b0bb3f2089
+    trust_remote_code: false
+  model:
+    architecture: token_tagging
+    tag_scheme: bio
+    head: softmax
+    decoder: greedy
+    dropout: 0.1
+  training:
+    seed: 42
+    epochs: 5
+    batch_size: 4
+    gradient_accumulation_steps: 2
+    learning_rate: 0.00002
+    weight_decay: 0.01
+    warmup_ratio: 0.1
+    max_grad_norm: 1.0
+    bf16: true
+    num_workers: 2
+    require_gpu: true

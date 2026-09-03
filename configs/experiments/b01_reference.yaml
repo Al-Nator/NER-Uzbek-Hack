@@ -1,0 +1,27 @@
+experiment:
+  run_id: b01_reference
+  data_config: configs/data/official.yaml
+  output_root: runs
+  primary_metric: exact_micro_f1
+  encoder:
+    name: distilbert/distilbert-base-multilingual-cased
+    revision: 45c032ab32cc946ad88a166f7cb282f58c753c2e
+    trust_remote_code: false
+  model:
+    architecture: token_tagging
+    tag_scheme: bio
+    head: softmax
+    decoder: greedy
+    dropout: 0.1
+  training:
+    seed: 42
+    epochs: 5
+    batch_size: 8
+    gradient_accumulation_steps: 1
+    learning_rate: 0.00005
+    weight_decay: 0.01
+    warmup_ratio: 0.1
+    max_grad_norm: 1.0
+    bf16: true
+    num_workers: 0
+    require_gpu: true

@@ -1,0 +1,16 @@
+data:
+  max_length: 256
+  stride: 64
+  sources:
+    - name: official_train_v1
+      path: ner_uz_hackathon_participant/data/train.jsonl
+      split: train
+      kind: gold
+      weight: 1.0
+      enabled: true
+    - name: official_dev_v1
+      path: ner_uz_hackathon_participant/data/dev.jsonl
+      split: dev
+      kind: gold
+      weight: 1.0
+      enabled: true
