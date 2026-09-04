@@ -1,0 +1,9 @@
+{
+  "url": "https://download.geonames.org/export/dump/UZ.zip",
+  "sha256": "2628d9bcdc46a15c2df320def81962351765b5a26f64e6959e5b782e433d0ab2",
+  "bytes": 367021,
+  "retrieved_at": "2026-09-04T21:11:05.163020+00:00",
+  "last_modified": "Fri, 04 Sep 2026 02:21:19 GMT",
+  "license": "CC BY 4.0",
+  "license_source": "https://download.geonames.org/export/dump/readme.txt"
+}

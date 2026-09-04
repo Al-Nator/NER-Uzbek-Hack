@@ -1,0 +1,5 @@
+dataset,url,status
+Uzbek NER Gold (uznlp-uz),https://huggingface.co/datasets/uznlp-uz/uzbek_NER/blob/main/Uzbek_NER_Gold.tsv,manual semantic review required
+25000-UzNER-5Style (2026),https://data.mendeley.com/datasets/2sxv4xhv4c/1/files/a34b20fb-1903-45dc-b0a0-f8f04f99d64e,manual semantic review required
+Mengliev et al. Uzbek NER (2024),https://data.mendeley.com/datasets/xf7pyvhb2v/1/files/d0ff7897-9bbc-4159-964b-3a081b53f527,manual semantic review required
+"WikiANN / PAN-X, config uz",https://huggingface.co/datasets/unimelb-nlp/wikiann/tree/main/uz,manual semantic review required

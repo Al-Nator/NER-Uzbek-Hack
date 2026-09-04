@@ -1,0 +1,5 @@
+split,gold_label,mentions,matching_GEO_alias_mentions,matching_GEO_alias_unique,examples
+train,NAME,21218,96,42,bobur; alisher navoiy; amir temur; go'zal; yulduz; zafar; salmon; oydin; malik; yunus
+train,ORG,23420,288,59,paxtakor; bunyodkor; navbahor; andijon; бухоро; андижон; oqtepa; madrid; buxoro; mash'al
+dev,NAME,2319,6,4,alisher navoiy; xassa; navoiy; marat
+dev,ORG,2659,42,18,andijon; bunyodkor; paxtakor; g'allakor; madrid; buxoro; surxon; navbahor; xorazm; yuksalish

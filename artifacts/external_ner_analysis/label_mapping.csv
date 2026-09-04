@@ -1,0 +1,5 @@
+external,target,policy
+PER / PERSON,NAME,перенести
+ORG / ORGANIZATION,ORG,перенести
+LOC / LOCATION / GPE / GEO,GEO,перенести после аудита guideline
+"MISC, MONEY, NUMERIC, TEMPORAL, WORK, DATE, LAW, PRODUCT, FAC, RANK, ...",,исключить и обязательно посчитать; не сливать в ближайший класс

@@ -1,0 +1,344 @@
+{
+  "scope": {
+    "population_documents": 14500,
+    "llm_annotated_unique_documents": 14500,
+    "full_predictions_scope": "All 14,500 train/dev documents were LLM-annotated; no heuristic corpus-wide labels were generated.",
+    "calibration": "skipped_by_user_request",
+    "batch_size_limit": 50
+  },
+  "validation": {
+    "stage": "all",
+    "all_valid": true,
+    "workers": [
+      {
+        "worker": "01",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "02",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "03",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "04",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "05",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "06",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "07",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "08",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "09",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "10",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "11",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "12",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "13",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "14",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "15",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "16",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "17",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "18",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "19",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      },
+      {
+        "worker": "20",
+        "stage": "all",
+        "valid": true,
+        "expected": 870,
+        "received": 870,
+        "errors": [],
+        "error_count": 0
+      }
+    ]
+  },
+  "conflicts": {
+    "documents_with_any_conflict": 1371,
+    "documents_needing_review": 753,
+    "by_field": {
+      "topics": 953,
+      "register": 382,
+      "genre": 356,
+      "text_form": 10
+    }
+  },
+  "weighted_estimates": {
+    "genre": {
+      "weighted_counts": {
+        "news_report": 2682.0,
+        "official_announcement": 707.0,
+        "social_post": 810.0,
+        "comment_reply": 3629.0,
+        "customer_review": 487.0,
+        "business_response": 411.0,
+        "advertisement": 787.0,
+        "classified_listing": 1244.0,
+        "informational_educational": 395.0,
+        "quiz_poll": 185.0,
+        "reference_result": 1886.0,
+        "personal_message": 513.0,
+        "mixed_composite": 312.0,
+        "other": 96.0
+      },
+      "share_among_resolved": {
+        "news_report": 0.1896210407239819,
+        "official_announcement": 0.04998585972850679,
+        "social_post": 0.05726809954751131,
+        "comment_reply": 0.25657522624434387,
+        "customer_review": 0.03443156108597285,
+        "business_response": 0.029058257918552037,
+        "advertisement": 0.05564196832579185,
+        "classified_listing": 0.08795248868778281,
+        "informational_educational": 0.027927036199095024,
+        "quiz_poll": 0.01307975113122172,
+        "reference_result": 0.13334276018099547,
+        "personal_message": 0.0362697963800905,
+        "mixed_composite": 0.022058823529411766,
+        "other": 0.006787330316742082
+      },
+      "unresolved_design_weight": 356.0
+    },
+    "topics": {
+      "weighted_counts": {
+        "politics_government": 1602.0,
+        "international_relations_conflict": 1490.0,
+        "law_crime_security": 1138.0,
+        "business_economy_finance": 1592.0,
+        "construction_real_estate_urbanism": 1203.0,
+        "technology_telecom": 1087.0,
+        "transport_automotive_aviation": 1114.0,
+        "sports_esports": 2131.0,
+        "entertainment_music_fandom": 1450.0,
+        "consumer_goods_services": 2794.0,
+        "health_medicine": 479.0,
+        "education_science": 827.0,
+        "employment_migration": 745.0,
+        "society_social_issues": 879.0,
+        "religion_spirituality": 780.0,
+        "culture_history_language": 495.0,
+        "environment_agriculture": 653.0,
+        "travel_geography": 513.0,
+        "personal_daily_life": 1498.0,
+        "other": 488.0
+      },
+      "share_among_resolved": {
+        "politics_government": 0.06977959752591689,
+        "international_relations_conflict": 0.06490112379127101,
+        "law_crime_security": 0.04956877776809827,
+        "business_economy_finance": 0.06934401951389493,
+        "construction_real_estate_urbanism": 0.052400034846240964,
+        "technology_telecom": 0.047347329906786306,
+        "transport_automotive_aviation": 0.04852339053924558,
+        "sports_esports": 0.09282167436187821,
+        "entertainment_music_fandom": 0.0631588117431832,
+        "consumer_goods_services": 0.12170049655893371,
+        "health_medicine": 0.020864186775851556,
+        "education_science": 0.036022301594215524,
+        "employment_migration": 0.032450561895635506,
+        "society_social_issues": 0.03828730725672968,
+        "religion_spirituality": 0.03397508493771234,
+        "culture_history_language": 0.02156111159508668,
+        "environment_agriculture": 0.02844324418503354,
+        "travel_geography": 0.022345152016726197,
+        "personal_daily_life": 0.06524958620088858,
+        "other": 0.021256206986671314
+      },
+      "unresolved_design_weight": 126.0
+    },
+    "text_form": {
+      "weighted_counts": {
+        "native_text": 14120.0,
+        "speech_transcript": 223.0,
+        "image_ocr": 147.0
+      },
+      "share_among_resolved": {
+        "native_text": 0.9744651483781919,
+        "speech_transcript": 0.015389924085576259,
+        "image_ocr": 0.010144927536231883
+      },
+      "unresolved_design_weight": 10.0
+    },
+    "register": {
+      "weighted_counts": {
+        "formal": 2654.0,
+        "neutral": 4206.0,
+        "informal": 6892.0,
+        "mixed": 366.0
+      },
+      "share_among_resolved": {
+        "formal": 0.18798696699249184,
+        "neutral": 0.29791755206119847,
+        "informal": 0.48817112905510696,
+        "mixed": 0.02592435189120272
+      },
+      "unresolved_design_weight": 382.0
+    }
+  },
+  "manual_review": {
+    "status": "completed",
+    "seed": 42,
+    "reviewer": "primary_agent",
+    "random_examples_reviewed": 100,
+    "random_sample_verdicts": {
+      "accept": 83,
+      "issue": 17
+    },
+    "random_sample_issue_rate": 0.17,
+    "random_sample_issue_fields": {
+      "genre": 6,
+      "topics": 9,
+      "text_form": 0,
+      "register": 3
+    },
+    "conflict_examples_reviewed_by_field": {
+      "genre": 20,
+      "topics": 20,
+      "text_form": 10,
+      "register": 20
+    },
+    "conflict_examples_reviewed_total": 70,
+    "conflict_review_policy": "Seeded examples from every conflict field: up to 20 per field; all 10 text_form conflicts.",
+    "calibration": "Skipped exactly as requested for this Sol run.",
+    "interpretation": "Double-annotation agreement is strong overall, but 17% of the seeded random audit had at least one material issue. Multi-label topic boundaries and unresolved 1-1 ties remain the main caveats; corpus shares should therefore be treated as exploratory estimates."
+  }
+}

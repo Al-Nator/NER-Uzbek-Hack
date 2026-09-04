@@ -1,0 +1,6 @@
+dataset,unit,schema,coordinates,required_conversion
+Текущий train/dev,документ,"JSONL: hash, text, entities[{label,start,end}]","Unicode code-point offsets [start, end)",нет
+Uzbek NER Gold,токен в строке TSV,"Sentence, TokenOrder, Token, NER_Tag, pos",BIO tags; готовых char offsets нет,group → reconstruct/align → BIO spans → offsets
+Mengliev 2024,токен в строке XLSX,"Sentence ID, Word, BIOES-Tag, token translation",BIOES; исходного sentence text/offsets нет,repair BIOES/IDs → group → reconstruct → offsets
+25000-UzNER-5Style,токен в строке XLSX,"ID, Manba, Uslub, Sentence ID, Word, BIOES-Tag",BIOES; исходного sentence text/offsets нет,define detokenization → map 4 types → offsets → new split
+WikiANN uz,предложение,"tokens[], ner_tags[], langs[], spans[]",IOB2 ids; готовых char offsets нет,decode ids → reconstruct → BIO spans → offsets

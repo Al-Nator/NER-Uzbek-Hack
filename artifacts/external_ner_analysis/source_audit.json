@@ -1,0 +1,163 @@
+{
+  "audited_at": "2026-09-04",
+  "normalization": "NFKC + apostrophe unification + casefold + whitespace collapse",
+  "sentence_min_normalized_chars": 20,
+  "sources": [
+    {
+      "priority": 1,
+      "dataset": "Uzbek NER Gold (uznlp-uz)",
+      "size": "4 176 предложений; 59 569 токенов; 9 250 spans",
+      "language_script": "узбекский; нормализованная латиница",
+      "domain": "смешанный; точный provenance нужно проверить",
+      "source_format": "TSV: Sentence, TokenOrder, Token, NER_Tag, pos; BIO; один train",
+      "labels": "PER, ORG, LOC + MISC/MONEY/NUMERIC/TEMPORAL/WORK",
+      "license": "CC BY 4.0",
+      "quality_risk": "gold по заявлению авторов; проверить границы, кавычки и Unicode-апострофы",
+      "decision": "первый кандидат после ручного аудита",
+      "primary_url": "https://huggingface.co/datasets/uznlp-uz/uzbek_NER",
+      "file_url": "https://huggingface.co/datasets/uznlp-uz/uzbek_NER/blob/main/Uzbek_NER_Gold.tsv"
+    },
+    {
+      "priority": 2,
+      "dataset": "25000-UzNER-5Style (2026)",
+      "size": "25 000 Sentence ID; 285 736 token rows",
+      "language_script": "узбекский; все предложения в файле латинские",
+      "domain": "5 стилей × 5 000; 304 предложения synthetic",
+      "source_format": "XLSX: ID, Manba, Uslub, Sentence, Word, BIOES-Tag; split-поля нет",
+      "labels": "21 тип; целевые PER/ORG/GPE/LOC",
+      "license": "CC BY 4.0 на карточке; проверить права первичных источников",
+      "quality_risk": "BIOES ошибок 0; exact-дублей 0; есть near-duplicates и семантический шум",
+      "decision": "крупный кандидат после provenance-аудита и нового split",
+      "primary_url": "https://data.mendeley.com/datasets/2sxv4xhv4c/1",
+      "file_url": "https://data.mendeley.com/datasets/2sxv4xhv4c/1/files/a34b20fb-1903-45dc-b0a0-f8f04f99d64e"
+    },
+    {
+      "priority": 3,
+      "dataset": "Mengliev et al. Uzbek NER (2024)",
+      "size": "карточка: 2 000/25 865; XLSX: 1 988 unique IDs/25 866 rows",
+      "language_script": "узбекский; латиница, неоднородные апострофы",
+      "domain": "IDs ≤154 — lex.uz/official; остальные в основном созданы авторами",
+      "source_format": "XLSX: Sentence, Word, BIOES-Tag, English-version (translation)",
+      "labels": "PER, ORG, LOC",
+      "license": "данные CC BY 4.0; статья CC BY-NC 4.0",
+      "quality_risk": "30 BIOES-ошибок; 12 IDs пропущены; 81 группа нормализованных дублей",
+      "decision": "не добавлять без исправления разметки и дедупликации",
+      "primary_url": "https://data.mendeley.com/datasets/xf7pyvhb2v/1",
+      "file_url": "https://data.mendeley.com/datasets/xf7pyvhb2v/1/files/d0ff7897-9bbc-4159-964b-3a081b53f527"
+    },
+    {
+      "priority": 4,
+      "dataset": "WikiANN / PAN-X, config uz",
+      "size": "1 000 train + 1 000 validation + 1 000 test",
+      "language_script": "узбекский; письменность проверять по строкам",
+      "domain": "Wikipedia",
+      "source_format": "Parquet: tokens[], ner_tags[], langs[], spans[]; IOB2",
+      "labels": "PER, ORG, LOC",
+      "license": "UNKNOWN на карточке Hugging Face",
+      "quality_risk": "автоматическая/слабая разметка; короткие энциклопедические фразы",
+      "decision": "не включать до выяснения прав и очистки",
+      "primary_url": "https://huggingface.co/datasets/unimelb-nlp/wikiann",
+      "file_url": "https://huggingface.co/datasets/unimelb-nlp/wikiann/tree/main/uz"
+    }
+  ],
+  "mendeley_file_audit": [
+    {
+      "dataset": "Mengliev et al. 2024",
+      "official_file": "courpusNER.xlsx",
+      "sha256": "e4915c37a06cbae51c2657933f8024ddc473e178492ed2d3909737de3ec3b68b",
+      "sheet_columns": "Sheet1: Sentence, Word, BIOES-Tag, English-version (translation)",
+      "token_rows": 25866,
+      "sentence_units": "1 990 contiguous groups; 1 988 unique IDs; 12 IDs missing",
+      "script": "1 982 latin + 8 no-letter groups; 0 Cyrillic/mixed",
+      "bioes": "30 errors in 24 groups",
+      "duplicates": "81 normalized groups; 101 extra occurrences",
+      "metadata_risk": "no source/style/split; IDs 192/193 are non-contiguous"
+    },
+    {
+      "dataset": "25000-UzNER-5Style",
+      "official_file": "25000-UzNER-5Style Corpus.xlsx",
+      "sha256": "ae9d4f3f9113936749c070c6ea45eaf845e5c44baf0b8373e5e03ef1595bfc81",
+      "sheet_columns": "Dataset_25000: ID, Manba, Uslub, Sentence, Word, BIOES-Tag",
+      "token_rows": 285736,
+      "sentence_units": "25 000 unique ordered IDs; no missing IDs",
+      "script": "25 000 latin; 0 Cyrillic/mixed",
+      "bioes": "0 errors in all 25 000 sentences",
+      "duplicates": "0 exact normalized duplicates; near-duplicates still possible",
+      "metadata_risk": "source/style present; no split or explicit synthetic flag"
+    }
+  ],
+  "mendeley_25k_source_profile": [
+    {
+      "source": "Lex.uz",
+      "style": "Rasmiy uslub",
+      "sentences": 4995,
+      "synthetic": false
+    },
+    {
+      "source": "Sintetik augmentatsiya",
+      "style": "Rasmiy uslub",
+      "sentences": 5,
+      "synthetic": true
+    },
+    {
+      "source": "Youtube.com",
+      "style": "Soʻzlashuv uslubi",
+      "sentences": 4758,
+      "synthetic": false
+    },
+    {
+      "source": "Sintetik augmentatsiya",
+      "style": "Soʻzlashuv uslubi",
+      "sentences": 242,
+      "synthetic": true
+    },
+    {
+      "source": "Xalqaro konferensiyasi doirasidagi Yosh olimlarning konferensiyasi",
+      "style": "Ilmiy uslub",
+      "sentences": 3999,
+      "synthetic": false
+    },
+    {
+      "source": "Hoshimov konferensiya toʻplamlari",
+      "style": "Ilmiy uslub",
+      "sentences": 949,
+      "synthetic": false
+    },
+    {
+      "source": "Sintetik augmentatsiya",
+      "style": "Ilmiy uslub",
+      "sentences": 52,
+      "synthetic": true
+    },
+    {
+      "source": "Kun.uz",
+      "style": "Publitsistik uslub",
+      "sentences": 4995,
+      "synthetic": false
+    },
+    {
+      "source": "Sintetik augmentatsiya",
+      "style": "Publitsistik uslub",
+      "sentences": 5,
+      "synthetic": true
+    },
+    {
+      "source": "Ikki eshik orasi",
+      "style": "Badiiy uslub",
+      "sentences": 4000,
+      "synthetic": false
+    },
+    {
+      "source": "Kecha va kunduz",
+      "style": "Badiiy uslub",
+      "sentences": 1000,
+      "synthetic": false
+    }
+  ],
+  "limitations": [
+    "Exact sentence matching does not detect paraphrases, near-duplicates or partial reuse.",
+    "Entity-surface overlap alone is not document leakage.",
+    "The two XLSX files do not contain original raw sentence text or character offsets.",
+    "Third-party source rights require separate provenance review."
+  ]
+}

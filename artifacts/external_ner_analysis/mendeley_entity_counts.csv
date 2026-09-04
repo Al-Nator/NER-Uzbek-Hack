@@ -1,0 +1,25 @@
+dataset,raw_label,candidate_spans,valid_spans,target_label,policy
+Mengliev 2024,PER,2365,2363,NAME,keep
+Mengliev 2024,ORG,1105,1100,ORG,keep
+Mengliev 2024,LOC,1374,1371,GEO,keep
+25000-UzNER-5Style,ORG,6203,6203,ORG,keep
+25000-UzNER-5Style,LAW,5039,5039,,drop + report
+25000-UzNER-5Style,CARDINAL,4670,4670,,drop + report
+25000-UzNER-5Style,DATE,4144,4144,,drop + report
+25000-UzNER-5Style,PER,3921,3921,NAME,keep
+25000-UzNER-5Style,GPE,3509,3509,GEO,keep
+25000-UzNER-5Style,ORDINAL,751,751,,drop + report
+25000-UzNER-5Style,EXAM,525,525,,drop + report
+25000-UzNER-5Style,EVENT,472,472,,drop + report
+25000-UzNER-5Style,PRODUCT,410,410,,drop + report
+25000-UzNER-5Style,MISC,401,401,,drop + report
+25000-UzNER-5Style,QUANTITY,318,318,,drop + report
+25000-UzNER-5Style,PERCENT,312,312,,drop + report
+25000-UzNER-5Style,MONEY,197,197,,drop + report
+25000-UzNER-5Style,FAC,149,149,,drop + report
+25000-UzNER-5Style,WORK-OF-ART,127,127,,drop + report
+25000-UzNER-5Style,AGE,51,51,,drop + report
+25000-UzNER-5Style,NORP,48,48,,drop + report
+25000-UzNER-5Style,LOC,29,29,GEO,keep
+25000-UzNER-5Style,LANGUAGE,9,9,,drop + report
+25000-UzNER-5Style,TIME,5,5,,drop + report

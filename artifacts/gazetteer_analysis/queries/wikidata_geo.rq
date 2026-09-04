@@ -1,0 +1,7 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+SELECT DISTINCT ?item WHERE {
+?item wdt:P17 wd:Q265 .
+      VALUES ?root { wd:Q486972 wd:Q56061 }
+      ?item wdt:P31/wdt:P279* ?root .
+} ORDER BY ?item LIMIT 50

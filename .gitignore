@@ -11,6 +11,10 @@ runs/*
 mlruns/
 artifacts/*
 !artifacts/.gitkeep
+!artifacts/style_analysis/
+!artifacts/entity_coverage/
+!artifacts/external_ner_analysis/
+!artifacts/gazetteer_analysis/
 
 *.pt
 *.pth
@@ -20,3 +24,4 @@ artifacts/*
 .idea/
 .vscode/
 .DS_Store
+.ipynb_checkpoints/

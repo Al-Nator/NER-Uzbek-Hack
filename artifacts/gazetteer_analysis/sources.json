@@ -1,0 +1,62 @@
+[
+  {
+    "source": "GeoNames UZ",
+    "labels": "GEO",
+    "format": "ZIP → UTF-8 TSV, 19 columns",
+    "license": "CC BY 4.0 (gazetteer dump README)",
+    "coverage": "Узбекистан: населённые пункты, административные и природные объекты; многоязычные aliases",
+    "limits": "Языки/историчность aliases отсутствуют в UZ.txt; для них нужен alternateNamesV2; вне-UZ география не покрывается",
+    "benefit": "Первый словарь GEO; фактическое покрытие измерено ниже",
+    "status": "UZ.zip скачан, хеш зафиксирован; полный локальный аудит",
+    "url": "https://download.geonames.org/export/dump/UZ.zip",
+    "documentation": "https://download.geonames.org/export/dump/readme.txt"
+  },
+  {
+    "source": "OpenStreetMap / Geofabrik UZ",
+    "labels": "GEO; ORG после проверки типа",
+    "format": "OSM PBF; также SHP/GeoPackage; теги объектов",
+    "license": "ODbL 1.0; attribution, условия для производных БД",
+    "coverage": "Населённые пункты, районы, улицы, локальные названия и POI; полнота зависит от картирования",
+    "limits": "Здание/бренд/оператор не равны GEO; дубли node/way/relation; name:uz/name:ru могут отсутствовать",
+    "benefit": "Дополнение локальной географии, отсутствующей в GeoNames",
+    "status": "Формат и доступ проверены; PBF не загружался, покрытие не измерено",
+    "url": "https://download.geofabrik.de/asia/uzbekistan.html",
+    "documentation": "https://www.openstreetmap.org/copyright"
+  },
+  {
+    "source": "Wikidata",
+    "labels": "NAME / ORG / GEO",
+    "format": "Entity JSON/RDF; SPARQL JSON/CSV/TSV; labels + aliases + claims",
+    "license": "CC0 для структурированных данных",
+    "coverage": "Известные люди, организации и места; uz/uz-cyrl/ru/en формы по наличию",
+    "limits": "Неполные labels и claims; QID не NER-класс; гражданство не равно языку; обычные люди представлены слабо",
+    "benefit": "Многоязычные aliases и устойчивый QID; основной внешний кандидат для NAME",
+    "status": "Документация проверена; запросы подготовлены, полной выгрузки нет",
+    "url": "https://query.wikidata.org/",
+    "documentation": "https://www.wikidata.org/wiki/Wikidata:Licensing"
+  },
+  {
+    "source": "КТЯДР / registr.stat.uz",
+    "labels": "ORG",
+    "format": "Веб-сервис/сведения по STIR (ИНН); bulk-файл/API не подтверждён",
+    "license": "Открытая лицензия массового повторного использования не подтверждена",
+    "coverage": "Юридические лица Узбекистана в государственном регистре",
+    "limits": "При проверке корень сайта перенаправляет в OneID; поиск по ID не даёт полного словаря; юридическое название отличается от бренда",
+    "benefit": "Проверка официального названия и статуса известной организации",
+    "status": "Регламент и сайт проверены; вход и массовая выгрузка не выполнялись",
+    "url": "https://registr.stat.uz/",
+    "documentation": "https://stat.uz/img/xizmatlar/reglamentinteraktiv-xizmatlar.pdf"
+  },
+  {
+    "source": "ЦБ Узбекистана: реестр банков",
+    "labels": "ORG",
+    "format": "HTML-карточки + XLSX; языковые версии uz/oz/ru/en",
+    "license": "Открытая лицензия на переиспользование XLSX не подтверждена",
+    "coverage": "Коммерческие банки; другие финансовые реестры доступны отдельно",
+    "limits": "Только финансовый сектор; XLSX и HTML могут иметь разные даты; краткие бренды требуют сверки",
+    "benefit": "Небольшой проверяемый отраслевой справочник ORG",
+    "status": "Подтверждена XLSX-ссылка от 03.09.2026; строки файла и покрытие не измерены",
+    "url": "https://cbu.uz/uz/credit-organizations/banks/head-offices/",
+    "documentation": "https://cbu.uz/uz/credit-organizations/"
+  }
+]

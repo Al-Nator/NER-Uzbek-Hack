@@ -1,0 +1,109 @@
+{
+  "snapshot": {
+    "url": "https://download.geonames.org/export/dump/UZ.zip",
+    "sha256": "2628d9bcdc46a15c2df320def81962351765b5a26f64e6959e5b782e433d0ab2",
+    "bytes": 367021,
+    "retrieved_at": "2026-09-04T21:11:05.163020+00:00",
+    "last_modified": "Fri, 04 Sep 2026 02:21:19 GMT",
+    "license": "CC BY 4.0",
+    "license_source": "https://download.geonames.org/export/dump/readme.txt"
+  },
+  "objects": 11157,
+  "feature_classes": {
+    "A": 296,
+    "H": 1665,
+    "L": 80,
+    "P": 8010,
+    "R": 22,
+    "S": 560,
+    "T": 521,
+    "V": 3
+  },
+  "selected_feature_classes": [
+    "A",
+    "H",
+    "L",
+    "P",
+    "T",
+    "V"
+  ],
+  "selected_objects": 10574,
+  "aliases": 23900,
+  "normalized_aliases": 17105,
+  "ambiguous_alias_keys": 1793,
+  "script_alias_rows": {
+    "cyrillic": 1170,
+    "latin": 21872,
+    "mixed": 59,
+    "other": 799
+  },
+  "normalization": "NFKC + casefold + apostrophe unification + whitespace collapse; no transliteration/stemming",
+  "selection": "A/P/H/T/V/L; alias >=3 code points with a letter; selected before looking at dev",
+  "input_sha256": {
+    "train": "b3281c93aeb28353384b749627a4a82217cdd250a607a3ea3803363b31718346",
+    "dev": "7e5d96a1de83311e3acb33a3c28ed8e13783141143c8eb83e86fb329a795e4d0"
+  },
+  "coverage": [
+    {
+      "strategy": "train GEO",
+      "alias_keys": 6699,
+      "dev_mentions": 2720,
+      "matched_mentions": 2001,
+      "mention_coverage_pct": 73.57,
+      "dev_unique": 1325,
+      "matched_unique": 712,
+      "unique_coverage_pct": 53.74,
+      "added_mentions_vs_train": 0,
+      "added_unique_vs_train": 0
+    },
+    {
+      "strategy": "GeoNames A/P only",
+      "alias_keys": 14060,
+      "dev_mentions": 2720,
+      "matched_mentions": 464,
+      "mention_coverage_pct": 17.06,
+      "dev_unique": 1325,
+      "matched_unique": 127,
+      "unique_coverage_pct": 9.58,
+      "added_mentions_vs_train": 31,
+      "added_unique_vs_train": 25
+    },
+    {
+      "strategy": "GeoNames A/P/H/T/V/L",
+      "alias_keys": 17105,
+      "dev_mentions": 2720,
+      "matched_mentions": 464,
+      "mention_coverage_pct": 17.06,
+      "dev_unique": 1325,
+      "matched_unique": 127,
+      "unique_coverage_pct": 9.58,
+      "added_mentions_vs_train": 31,
+      "added_unique_vs_train": 25
+    },
+    {
+      "strategy": "train + GeoNames A/P",
+      "alias_keys": 20338,
+      "dev_mentions": 2720,
+      "matched_mentions": 2032,
+      "mention_coverage_pct": 74.71,
+      "dev_unique": 1325,
+      "matched_unique": 737,
+      "unique_coverage_pct": 55.62,
+      "added_mentions_vs_train": 31,
+      "added_unique_vs_train": 25
+    },
+    {
+      "strategy": "train + GeoNames A/P/H/T/V/L",
+      "alias_keys": 23381,
+      "dev_mentions": 2720,
+      "matched_mentions": 2032,
+      "mention_coverage_pct": 74.71,
+      "dev_unique": 1325,
+      "matched_unique": 737,
+      "unique_coverage_pct": 55.62,
+      "added_mentions_vs_train": 31,
+      "added_unique_vs_train": 25
+    }
+  ],
+  "caveat": "Gold mention surface coverage; not NER precision, recall or F1. No model trained."
+}

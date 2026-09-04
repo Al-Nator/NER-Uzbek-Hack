@@ -1,0 +1,6 @@
+strategy,alias_keys,dev_mentions,matched_mentions,mention_coverage_pct,dev_unique,matched_unique,unique_coverage_pct,added_mentions_vs_train,added_unique_vs_train
+train GEO,6699,2720,2001,73.57,1325,712,53.74,0,0
+GeoNames A/P only,14060,2720,464,17.06,1325,127,9.58,31,25
+GeoNames A/P/H/T/V/L,17105,2720,464,17.06,1325,127,9.58,31,25
+train + GeoNames A/P,20338,2720,2032,74.71,1325,737,55.62,31,25
+train + GeoNames A/P/H/T/V/L,23381,2720,2032,74.71,1325,737,55.62,31,25

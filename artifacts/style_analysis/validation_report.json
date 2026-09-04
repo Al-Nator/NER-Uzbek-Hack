@@ -1,0 +1,186 @@
+{
+  "stage": "all",
+  "all_valid": true,
+  "workers": [
+    {
+      "worker": "01",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "02",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "03",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "04",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "05",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "06",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "07",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "08",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "09",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "10",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "11",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "12",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "13",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "14",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "15",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "16",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "17",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "18",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "19",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "worker": "20",
+      "stage": "all",
+      "valid": true,
+      "expected": 870,
+      "received": 870,
+      "errors": [],
+      "error_count": 0
+    }
+  ]
+}

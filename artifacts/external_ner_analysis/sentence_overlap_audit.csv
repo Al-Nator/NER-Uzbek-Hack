@@ -1,0 +1,5 @@
+dataset,published_or_actual_sentences,comparable_unique_sentences,exact_overlap_train,exact_overlap_dev,status
+Uzbek NER Gold,4176,4152,0,0,официальный HF-файл
+WikiANN uz,3000,989,2,0,три официальных HF splits
+Mengliev et al. 2024,1988,1872,0,0,официальный XLSX; actual IDs вместо заявленных 2 000
+25000-UzNER-5Style,25000,24905,0,0,официальный XLSX

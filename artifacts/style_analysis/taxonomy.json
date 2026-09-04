@@ -1,0 +1,163 @@
+{
+  "version": "2.0.0",
+  "created_for": "brand_analytics_data style/source analysis",
+  "run_model": "gpt-5.6-sol",
+  "run_reasoning_effort": "low",
+  "calibration": "skipped_by_user_request",
+  "annotation_unit": "one source document",
+  "rules": {
+    "genre": "Exactly one primary communicative genre.",
+    "topics": "One to three topics; primary topic first.",
+    "text_form": "Exactly one observed production form. Native_text is the conservative default when no OCR/transcript evidence is visible.",
+    "register": "Exactly one register label.",
+    "evidence": "Zero to three short exact substrings from the input text.",
+    "confidence": "Numbers in [0, 1].",
+    "mixed_composite": "Use only for an actual concatenation of different materials/authors, not merely bilingual text.",
+    "genre_decision_order": [
+      "First identify explicit specialised forms: business_response, customer_review, classified_listing, advertisement, quiz_poll, reference_result, personal_message.",
+      "Then distinguish first-party official_announcement from third-person news_report.",
+      "Use comment_reply for a context-dependent user reaction or conversational fragment.",
+      "Use social_post only as the remaining standalone social publication/caption.",
+      "Use other only when communicative function is genuinely indeterminate."
+    ],
+    "anti_catchall_rules": [
+      "Publication on Telegram or another social platform is a channel clue, not a reason by itself to choose social_post.",
+      "A headline/date/byline followed by factual third-person reporting is news_report even if social links appear at the end.",
+      "A price, route, contact, product parameters, or a concrete private offer normally indicates classified_listing; broad brand promotion indicates advertisement.",
+      "A short score, schedule, track title, username list, profile, or other non-narrative metadata is reference_result, not comment_reply or social_post.",
+      "A thank-you or evaluation of a doctor, restaurant, product, course, or service is customer_review; an organisation replying to it is business_response.",
+      "A greeting or congratulations addressed to a person is personal_message.",
+      "Choose topics from the semantic subject of the text, never from incidental brand/location/entity names. Use other only when no listed subject applies.",
+      "If an explicit marker says 'Текст на изображении:' or equivalent, choose image_ocr. Repeated 'Спикер N:' or equivalent indicates speech_transcript."
+    ],
+    "register_boundaries": {
+      "formal": "Institutional/professional wording and consistently formal syntax.",
+      "neutral": "Standard factual prose without strong institutional or colloquial marking.",
+      "informal": "Conversational address, slang, expressive spelling, heavy emoji, or clearly casual language.",
+      "mixed": "Two substantial sections with contrasting registers; isolated informal words do not suffice."
+    }
+  },
+  "genre": {
+    "allowed": [
+      "news_report",
+      "official_announcement",
+      "social_post",
+      "comment_reply",
+      "customer_review",
+      "business_response",
+      "advertisement",
+      "classified_listing",
+      "informational_educational",
+      "quiz_poll",
+      "reference_result",
+      "personal_message",
+      "mixed_composite",
+      "other"
+    ],
+    "definitions": {
+      "news_report": "Third-person factual coverage of an event: a news story, report, review, or digest. A social-channel origin does not override this genre.",
+      "official_announcement": "First-party statement by a government body, institution, company, or press service in its own voice; not third-person reporting about that body.",
+      "social_post": "Standalone social-feed/channel post or caption that does not meet a more specific genre below. Treat it as a fallback, not a label for every text sourced from social media.",
+      "comment_reply": "Short user reaction, opinion, conversational answer, or context-dependent fragment. Prefer this over other for ordinary readable comments.",
+      "customer_review": "Customer evaluation of a product, place, course, or service, even when the platform is not named.",
+      "business_response": "An organisation's reply to a customer, including templated replies.",
+      "advertisement": "Promotion, sale announcement, or broad call to buy/order.",
+      "classified_listing": "Structured private offer with price, contact details, or item parameters.",
+      "informational_educational": "Explanation, instruction, advice, or teaching material.",
+      "quiz_poll": "Explicit quiz, test, poll, or audience question that requests an answer/vote. Never use merely because a text is short, imperative, or contains a rhetorical question.",
+      "reference_result": "Non-narrative schedule, result, profile, list, or media metadata.",
+      "personal_message": "Greeting, invitation, or personal announcement.",
+      "mixed_composite": "One record clearly concatenates texts of different genres or authors.",
+      "other": "Unreadable/minimal material with insufficient communicative function, or no suitable genre. Do not use it as a fallback for a normal comment."
+    }
+  },
+  "topics": {
+    "allowed": [
+      "politics_government",
+      "international_relations_conflict",
+      "law_crime_security",
+      "business_economy_finance",
+      "construction_real_estate_urbanism",
+      "technology_telecom",
+      "transport_automotive_aviation",
+      "sports_esports",
+      "entertainment_music_fandom",
+      "consumer_goods_services",
+      "health_medicine",
+      "education_science",
+      "employment_migration",
+      "society_social_issues",
+      "religion_spirituality",
+      "culture_history_language",
+      "environment_agriculture",
+      "travel_geography",
+      "personal_daily_life",
+      "other"
+    ],
+    "definitions": {
+      "politics_government": "Domestic politics, elections, and public administration.",
+      "international_relations_conflict": "Foreign affairs, wars, and international conflicts.",
+      "law_crime_security": "Law, courts, crime, corruption, and security.",
+      "business_economy_finance": "Business, economy, markets, banking, and finance.",
+      "construction_real_estate_urbanism": "Real estate, construction, and urban infrastructure.",
+      "technology_telecom": "IT, digital services, communications, and telecom.",
+      "transport_automotive_aviation": "Cars, roads, public transport, rail, and aviation.",
+      "sports_esports": "Sports, competitions, and esports.",
+      "entertainment_music_fandom": "Film, music, shows, celebrities, and fandoms.",
+      "consumer_goods_services": "Food, restaurants, shops, products, and household services.",
+      "health_medicine": "Health, medicine, and pharmaceuticals.",
+      "education_science": "Education, learning, and science.",
+      "employment_migration": "Jobs, employment, and migration.",
+      "society_social_issues": "Community life and social issues.",
+      "religion_spirituality": "Religion and spiritual practices.",
+      "culture_history_language": "Culture, history, literature, and language.",
+      "environment_agriculture": "Environment, weather, natural resources, and agriculture.",
+      "travel_geography": "Tourism, countries, cities, and landmarks.",
+      "personal_daily_life": "Relationships, family, and everyday life.",
+      "other": "The topic is indeterminate or outside the taxonomy."
+    }
+  },
+  "text_form": {
+    "allowed": [
+      "native_text",
+      "speech_transcript",
+      "image_ocr"
+    ],
+    "definitions": {
+      "native_text": "Originally written/typed text, or no observable evidence of OCR/transcription.",
+      "speech_transcript": "Speech transcribed from audio/video, often with speaker labels.",
+      "image_ocr": "Text extracted from an image, often introduced by an OCR marker."
+    }
+  },
+  "register": {
+    "allowed": [
+      "formal",
+      "neutral",
+      "informal",
+      "mixed"
+    ],
+    "definitions": {
+      "formal": "Official, institutional, professional, or deliberately formal language.",
+      "neutral": "Unmarked informational language without a strongly formal or conversational tone.",
+      "informal": "Conversational, colloquial, emotional, or slang-heavy language.",
+      "mixed": "Substantial mixture of formal and informal registers in one record."
+    }
+  },
+  "output_schema": {
+    "item_id": "string",
+    "genre": "one genre label",
+    "topics": "array of 1-3 unique topic labels",
+    "text_form": "one text_form label",
+    "register": "one register label",
+    "evidence": "array of 0-3 exact input substrings",
+    "genre_confidence": "number 0..1",
+    "topics_confidence": "number 0..1"
+  },
+  "known_schema_limitation": {
+    "channel": "The requested output schema defines no channel field or channel taxonomy. Agreement is therefore computed for text_form in its place; channel is reported as unavailable rather than invented post hoc."
+  },
+  "prior_run_audit_refinement": {
+    "reason": "The archived Luna run showed catch-all use of social_post/comment_reply/other and confusion among topic and register boundaries.",
+    "change": "Added explicit anti-catchall rules while preserving the requested label schema. No calibration stage is run in this Sol experiment."
+  }
+}

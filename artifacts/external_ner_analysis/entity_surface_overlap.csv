@@ -1,0 +1,13 @@
+dataset,label,external_unique,in_train,in_dev,train_share_pct,dev_share_pct
+Uzbek NER Gold,NAME,531,57,14,10.7,2.6
+Uzbek NER Gold,GEO,734,341,169,46.5,23.0
+Uzbek NER Gold,ORG,850,200,81,23.5,9.5
+WikiANN uz,NAME,164,18,4,11.0,2.4
+WikiANN uz,GEO,964,32,19,3.3,2.0
+WikiANN uz,ORG,423,37,14,8.7,3.3
+Mengliev et al. 2024,NAME,357,12,3,3.4,0.8
+Mengliev et al. 2024,GEO,241,101,57,41.9,23.7
+Mengliev et al. 2024,ORG,225,51,22,22.7,9.8
+25000-UzNER-5Style,NAME,503,74,24,14.7,4.8
+25000-UzNER-5Style,GEO,236,137,103,58.1,43.6
+25000-UzNER-5Style,ORG,478,119,59,24.9,12.3
