@@ -1,5 +1,6 @@
 experiment:
   run_id: b01_reference
+  pipeline: uzner
   data_config: configs/data/official.yaml
   output_root: runs
   primary_metric: exact_micro_f1
@@ -13,10 +14,14 @@ experiment:
     head: softmax
     decoder: greedy
     dropout: 0.1
+  tokenization:
+    max_length: 256
+    stride: 64
   training:
     seed: 42
     epochs: 5
     batch_size: 8
+    eval_batch_size: 16
     gradient_accumulation_steps: 1
     learning_rate: 0.00005
     weight_decay: 0.01
@@ -25,3 +30,6 @@ experiment:
     bf16: true
     num_workers: 0
     require_gpu: true
+    gradient_checkpointing: false
+    log_every_steps: 25
+    early_stopping_patience: 2

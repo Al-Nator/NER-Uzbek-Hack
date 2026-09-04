@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
-from dataclasses import dataclass
+from collections.abc import Iterable, Mapping
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 from uzner.config import ExperimentConfig
+from uzner.data.io import sha256_file
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,9 +24,28 @@ class RunPaths:
     predictions: Path
     metrics: Path
     slice_metrics: Path
-    log: Path
+    errors: Path
+    error_summary: Path
+    tokenizer_audit: Path
+    events: Path
+    history: Path
+    console_log: Path
+    report: Path
+    training_plot: Path
     resolved_config: Path
     metadata: Path
+    status: Path
+    manifest: Path
+    environment: Path
+
+
+@dataclass(frozen=True, slots=True)
+class ArtifactEntry:
+    """Один файл в итоговом манифесте запуска."""
+
+    path: str
+    bytes: int
+    sha256: str
 
 
 def prepare_run_paths(
@@ -42,7 +62,9 @@ def prepare_run_paths(
     predictions = root / "predictions"
     metrics = root / "metrics"
     logs = root / "logs"
-    for directory in (checkpoints, predictions, metrics, logs):
+    reports = root / "reports"
+    environment = root / "environment"
+    for directory in (checkpoints, predictions, metrics, logs, reports, environment):
         directory.mkdir(parents=True, exist_ok=True)
     return RunPaths(
         root=root,
@@ -51,9 +73,19 @@ def prepare_run_paths(
         predictions=predictions / "dev.jsonl",
         metrics=metrics / "dev.json",
         slice_metrics=metrics / "slices.json",
-        log=logs / "train.jsonl",
+        errors=metrics / "errors.jsonl",
+        error_summary=metrics / "error_summary.json",
+        tokenizer_audit=metrics / "tokenizer_audit.json",
+        events=logs / "events.jsonl",
+        history=logs / "history.csv",
+        console_log=logs / "console.log",
+        report=reports / "report.md",
+        training_plot=reports / "training.svg",
         resolved_config=root / "resolved_config.yaml",
         metadata=root / "metadata.json",
+        status=root / "status.json",
+        manifest=root / "artifact_manifest.json",
+        environment=environment,
     )
 
 
@@ -74,3 +106,35 @@ def write_json(path: Path, value: Mapping[str, Any]) -> None:
         encoding="utf-8",
     )
     temporary.replace(path)
+
+
+def write_jsonl(path: Path, values: Iterable[Mapping[str, Any]]) -> None:
+    """Атомарно записывает набор JSON-объектов по одному на строку."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    with temporary.open("w", encoding="utf-8") as stream:
+        for value in values:
+            stream.write(json.dumps(value, ensure_ascii=False, sort_keys=True) + "\n")
+    temporary.replace(path)
+
+
+def finalize_artifact_manifest(paths: RunPaths) -> tuple[ArtifactEntry, ...]:
+    """Хэширует все артефакты и атомарно пишет итоговый манифест."""
+    entries = tuple(
+        ArtifactEntry(
+            path=str(path.relative_to(paths.root)),
+            bytes=path.stat().st_size,
+            sha256=sha256_file(path),
+        )
+        for path in sorted(paths.root.rglob("*"))
+        if path.is_file() and path != paths.manifest and not path.name.endswith(".tmp")
+    )
+    write_json(
+        paths.manifest,
+        {
+            "schema_version": 1,
+            "run_root": str(paths.root),
+            "artifacts": [asdict(entry) for entry in entries],
+        },
+    )
+    return entries

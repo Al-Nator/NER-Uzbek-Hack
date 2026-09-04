@@ -17,6 +17,8 @@ sources -> validation -> tokenization/model -> character spans -> exact scorer
 - `models/` содержит архитектурные компоненты, но не читает файлы.
 - `evaluation/` не зависит от tokenizer-а или модели.
 - `experiments/` задаёт стандартную раскладку артефактов.
+- `training/` связывает окна, модель, checkpoint, inference и отчёт, но не содержит
+  архитектурную логику.
 - `scripts/` остаётся тонким CLI-слоем без бизнес-логики.
 
 ## Расширение данных
@@ -32,6 +34,10 @@ sources -> validation -> tokenization/model -> character spans -> exact scorer
 реализации добавляются отдельными пакетами и используют общие типы, evaluator и
 формат run-артефактов. Архитектурная логика не должна попадать в data loader.
 
+Pretrained encoder всегда загружается с FP32-параметрами. BF16 включается
+только через CUDA autocast, чтобы optimizer обновлял численно устойчивую
+копию весов.
+
 ## Run-артефакты
 
 Каждый `runs/<run_id>/` содержит:
@@ -43,3 +49,6 @@ sources -> validation -> tokenization/model -> character spans -> exact scorer
 - `predictions/dev.jsonl`;
 - `metrics/dev.json` и slice-метрики;
 - машинно-читаемый журнал обучения.
+
+Полная схема и правила изоляции smoke-run-ов описаны в
+[`ARTIFACTS.md`](ARTIFACTS.md).

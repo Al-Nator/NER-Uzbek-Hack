@@ -8,6 +8,7 @@ htmlcov/
 
 runs/*
 !runs/.gitkeep
+mlruns/
 artifacts/*
 !artifacts/.gitkeep
 

@@ -1,0 +1,11 @@
+series:
+  name: second
+  stages:
+    - name: mdeberta
+      configs:
+        - configs/experiments/s20_mdeberta_v3_base_bioes_constrained.yaml
+        - configs/experiments/s21_mdeberta_v3_base_bioes_crf.yaml
+    - name: xlmr-large
+      configs:
+        - configs/experiments/s22_xlmr_large_bioes_constrained.yaml
+        - configs/experiments/s23_xlmr_large_bioes_crf.yaml

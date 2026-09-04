@@ -14,6 +14,13 @@ dependencies = [
 
 [project.optional-dependencies]
 train = [
+  "huggingface-hub==1.30.0",
+  "mlflow>=3.8,<4",
+  "nvidia-ml-py>=13,<14",
+  "protobuf==7.36.1",
+  "psutil>=7,<8",
+  "rich==15.0.0",
+  "sentencepiece==0.2.1",
   "tokenizers==0.22.2",
   "torch==2.6.0",
   "tqdm==4.70.0",
@@ -40,6 +47,7 @@ packages = ["src/uzner"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers --strict-config --cov=uzner --cov-report=term-missing"
+markers = ["train: тесты, требующие PyTorch train-extra"]
 testpaths = ["tests"]
 
 [tool.coverage.run]

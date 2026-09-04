@@ -1,5 +1,6 @@
 experiment:
   run_id: a21_xlmr_base_bioes_constrained
+  pipeline: uzner
   data_config: configs/data/official.yaml
   output_root: runs
   primary_metric: exact_micro_f1
@@ -13,10 +14,14 @@ experiment:
     head: softmax
     decoder: constrained
     dropout: 0.1
+  tokenization:
+    max_length: 512
+    stride: 128
   training:
     seed: 42
     epochs: 5
     batch_size: 4
+    eval_batch_size: 8
     gradient_accumulation_steps: 2
     learning_rate: 0.00002
     weight_decay: 0.01
@@ -25,3 +30,6 @@ experiment:
     bf16: true
     num_workers: 2
     require_gpu: true
+    gradient_checkpointing: false
+    log_every_steps: 25
+    early_stopping_patience: 2

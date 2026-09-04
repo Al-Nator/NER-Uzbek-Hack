@@ -9,6 +9,8 @@
 2. `ner_uz_hackathon_participant/API.md`
 3. `docs/EXPERIMENT_PROTOCOL.md`
 4. `docs/ARCHITECTURE.md`
+5. `docs/ARTIFACTS.md`
+6. `docs/EXPERIMENT_TRACKING.md`
 
 ## Обязательные правила
 
@@ -31,6 +33,8 @@ offsets.
 - Не дублировать data-, metric- и decoding-логику внутри реализаций моделей.
 - Каждый эксперимент задавать конфигом и сохранять resolved config, data hashes,  
 seed, версии окружения, метрики и предсказания.
+- Полный experiment run логировать в MLflow; smoke и unit-тесты туда не писать.
+Checkpoint-ы не дублировать: MLflow хранит только метрики и лёгкие артефакты.
 - `best` выбирать по exact-span micro-F1; `last` сохранять для полного resume.
 - Новая архитектура должна возвращать общий `Entity(label, start, end, score)`.
 - Любое изменение поведения покрывать тестом. Обязательны проверки offsets,  
