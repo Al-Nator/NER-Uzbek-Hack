@@ -1,0 +1,11 @@
+series:
+  name: continuation-a100
+  stages:
+    - name: encoders
+      configs:
+        - configs/experiments/a100/s24_bge_m3_retromae_bioes_constrained.yaml
+        - configs/experiments/a100/s25_xlm_v_base_bioes_constrained.yaml
+    - name: spans
+      configs:
+        - configs/experiments/a100/s30_xlmr_large_biaffine.yaml
+        - configs/experiments/a100/s31_xlmr_large_global_pointer.yaml

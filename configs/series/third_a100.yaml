@@ -1,0 +1,9 @@
+series:
+  name: third-spans-a100
+  stages:
+    - name: biaffine
+      configs:
+        - configs/experiments/a100/s30_xlmr_large_biaffine.yaml
+    - name: global-pointer
+      configs:
+        - configs/experiments/a100/s31_xlmr_large_global_pointer.yaml

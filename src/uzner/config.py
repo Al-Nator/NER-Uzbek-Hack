@@ -75,14 +75,24 @@ class ModelConfig:
 
     architecture: str
     tag_scheme: TagScheme
-    head: Literal["softmax", "crf"]
-    decoder: Literal["greedy", "constrained", "crf"]
+    head: Literal["softmax", "crf", "biaffine", "global_pointer"]
+    decoder: Literal["greedy", "constrained", "crf", "span"]
     dropout: float = 0.1
+    span_head_size: int = 64
+    span_threshold: float = 0.5
 
     def __post_init__(self) -> None:
         """Проверяет совместимость головы и декодера."""
+        if self.architecture == "span":
+            if self.head not in {"biaffine", "global_pointer"} or self.decoder != "span":
+                raise ValueError("Span architecture требует biaffine/global_pointer и span decoder")
+            if self.span_head_size < 2 or self.span_head_size % 2:
+                raise ValueError("span_head_size должен быть положительным чётным числом")
+            if not 0 < self.span_threshold < 1 or not 0 <= self.dropout < 1:
+                raise ValueError("Некорректные span_threshold или dropout")
+            return
         if self.architecture != "token_tagging":
-            raise ValueError("Пока реализована только architecture=token_tagging")
+            raise ValueError("Поддерживаются architecture=token_tagging и span")
         validate_scheme(self.tag_scheme)
         if self.head not in {"softmax", "crf"}:
             raise ValueError(f"Некорректная head: {self.head!r}")
@@ -98,7 +108,15 @@ class ModelConfig:
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> ModelConfig:
         """Создаёт конфигурацию модели из YAML-объекта."""
-        allowed = {"architecture", "tag_scheme", "head", "decoder", "dropout"}
+        allowed = {
+            "architecture",
+            "tag_scheme",
+            "head",
+            "decoder",
+            "dropout",
+            "span_head_size",
+            "span_threshold",
+        }
         _check_keys(value, allowed, name="model")
         return cls(
             architecture=str(value.get("architecture", "token_tagging")),
@@ -106,6 +124,8 @@ class ModelConfig:
             head=value.get("head", "softmax"),
             decoder=value.get("decoder", "greedy"),
             dropout=float(value.get("dropout", 0.1)),
+            span_head_size=int(value.get("span_head_size", 64)),
+            span_threshold=float(value.get("span_threshold", 0.5)),
         )
 
 
@@ -150,8 +170,10 @@ class TrainingConfig:
     num_workers: int = 0
     require_gpu: bool = True
     gradient_checkpointing: bool = False
+    optimizer: Literal["adamw", "adamw_8bit"] = "adamw"
     log_every_steps: int = 25
     early_stopping_patience: int = 2
+    initial_checkpoint: str | None = None
 
     def __post_init__(self) -> None:
         """Проверяет численные параметры обучения."""
@@ -173,6 +195,8 @@ class TrainingConfig:
             raise ValueError("num_workers не может быть отрицательным")
         if self.early_stopping_patience < 0:
             raise ValueError("early_stopping_patience не может быть отрицательным")
+        if self.optimizer not in {"adamw", "adamw_8bit"}:
+            raise ValueError("optimizer должен быть adamw или adamw_8bit")
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> TrainingConfig:
@@ -191,8 +215,10 @@ class TrainingConfig:
             "num_workers",
             "require_gpu",
             "gradient_checkpointing",
+            "optimizer",
             "log_every_steps",
             "early_stopping_patience",
+            "initial_checkpoint",
         }
         _check_keys(value, allowed, name="training")
         return cls(**value)

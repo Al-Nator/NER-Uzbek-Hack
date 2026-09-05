@@ -1,0 +1,6 @@
+series:
+  name: third-low-lr-a100
+  stages:
+    - name: low-lr
+      configs:
+        - configs/experiments/a100/s33_bge_global_pointer_low_lr.yaml

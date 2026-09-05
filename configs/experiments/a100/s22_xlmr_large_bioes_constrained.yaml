@@ -1,0 +1,36 @@
+experiment:
+  run_id: s22_xlmr_large_bioes_constrained
+  pipeline: uzner
+  data_config: configs/data/official.yaml
+  output_root: runs
+  primary_metric: exact_micro_f1
+  encoder:
+    name: FacebookAI/xlm-roberta-large
+    revision: c23d21b0620b635a76227c604d44e43a9f0ee389
+    trust_remote_code: false
+    use_safetensors: true
+  model:
+    architecture: token_tagging
+    tag_scheme: bioes
+    head: softmax
+    decoder: constrained
+    dropout: 0.1
+  tokenization:
+    max_length: 512
+    stride: 128
+  training:
+    seed: 42
+    epochs: 5
+    batch_size: 8
+    eval_batch_size: 16
+    gradient_accumulation_steps: 1
+    learning_rate: 0.00002
+    weight_decay: 0.01
+    warmup_ratio: 0.1
+    max_grad_norm: 1.0
+    bf16: true
+    num_workers: 4
+    require_gpu: true
+    gradient_checkpointing: false
+    log_every_steps: 25
+    early_stopping_patience: 2

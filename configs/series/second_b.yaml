@@ -1,0 +1,9 @@
+series:
+  name: second-b
+  stages:
+    - name: bge
+      configs:
+        - configs/experiments/s24_bge_m3_retromae_bioes_constrained.yaml
+    - name: xlm-v
+      configs:
+        - configs/experiments/s25_xlm_v_base_bioes_constrained.yaml

@@ -45,6 +45,31 @@ CRF первой серии был лишь на `0.0021` micro-F1 выше BIOE
 `60.1` вместо `19.1` минуты. Поэтому `s21` и `s23` запускаются после соответствующего
 constrained-run; результаты не считаются заранее гарантированными.
 
+## Текущие результаты
+
+| Run | P | R | Micro-F1 | Best epoch | Время |
+|---|---:|---:|---:|---:|---:|
+| `s20` | 0.8907 | 0.9019 | 0.8963 | 5 | 62.1 мин |
+| `s21` | 0.8967 | 0.9001 | **0.8984** | 5 | 43.1 мин |
+| `s22` (A100) | 0.89868 | 0.90335 | **0.90101** | 5 | 23.6 мин |
+| `s23` (A100) | 0.89109 | 0.90556 | 0.89827 | 4 | 90.4 мин |
+
+Все четыре запуска завершены. Победитель — `s22`, BIOES constrained.
+У `s23` recall немного выше, но больше false positives; CRF здесь не улучшил F1.
+Для A100 канонический suffix — `s2-sequence-a100-v2`.
+Локальный MLflow experiment `1`: [s22](http://127.0.0.1:5000/#/experiments/1/runs/a7ac856502b04b29b83fe9d86d2889a6),
+[s23](http://127.0.0.1:5000/#/experiments/1/runs/8e503daba3574999bcf33f137f11dc07).
+Импорт проверен сравнением SHA-256 сериализованных tuples `(key, value, timestamp,
+step, is_nan)` всей metric history и `(key, value)` params: совпали на источнике
+и локально. s22: 9 949 metric points; s23: 15 189. У каждого 2 158 metric keys.
+Source run ID сохранён отдельно; повторный импорт не создал дублей.
+Время s22 — между run_started/run_completed, включая оценку и сохранение;
+инициализация перед run_started в этот интервал не входит. Время разных GPU
+нельзя трактовать как чистую стоимость изменения decoder-а.
+
+Далее: [encoder continuation 2B](ENCODER_CONTINUATION.md),
+[две span-head серии 3](THIRD_SERIES.md), [данные серии 4](FOURTH_SERIES.md).
+
 Все четыре конфигурации прошли BF16 forward и одноэпоховый train/eval/checkpoint
 smoke на целевой GPU. mDeBERTa использовала до `6.99 GiB`, XLM-R-large — до
 `10.43 GiB`; OOM не возник. Полный alignment также проверен: mDeBERTa создаёт
@@ -96,3 +121,11 @@ uv run python scripts/run_series.py \
   --stage xlmr-large \
   --run-suffix s2-sequence-v1
 ```
+
+`s22` и `s23` подготовлены для временного запуска на A100 80 GB в
+`/home/danya/NER-Uzbek-Hack`. Отдельный `second_a100.yaml` сохраняет
+effective batch `8`, но использует physical batch `8` без gradient
+checkpointing. Run-ы получают suffix `s2-sequence-a100-v2`, отдельный
+remote MLflow и после завершения возвращаются в локальные
+`runs/` и MLflow. Полная инструкция:
+[`REMOTE_EXPERIMENTS.md`](REMOTE_EXPERIMENTS.md).

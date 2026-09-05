@@ -1,0 +1,36 @@
+experiment:
+  run_id: s24_bge_m3_retromae_bioes_constrained
+  pipeline: uzner
+  data_config: configs/data/official.yaml
+  output_root: runs
+  primary_metric: exact_micro_f1
+  encoder:
+    name: BAAI/bge-m3-retromae
+    revision: 95c4f81ef8f7911dcac8e384532489c32c8dea64
+    trust_remote_code: false
+    use_safetensors: false
+  model:
+    architecture: token_tagging
+    tag_scheme: bioes
+    head: softmax
+    decoder: constrained
+    dropout: 0.1
+  tokenization:
+    max_length: 512
+    stride: 128
+  training:
+    seed: 42
+    epochs: 5
+    batch_size: 1
+    eval_batch_size: 2
+    gradient_accumulation_steps: 8
+    learning_rate: 0.00002
+    weight_decay: 0.01
+    warmup_ratio: 0.1
+    max_grad_norm: 1.0
+    bf16: true
+    num_workers: 2
+    require_gpu: true
+    gradient_checkpointing: true
+    log_every_steps: 25
+    early_stopping_patience: 2

@@ -12,6 +12,7 @@ from transformers import AutoTokenizer
 
 from uzner.config import ExperimentConfig, load_data_config, load_experiment_config, resolve_sources
 from uzner.data.io import load_documents
+from uzner.data.spans import span_coverage, with_span_targets
 from uzner.data.windows import IGNORE_LABEL, build_window_features
 from uzner.experiments.series import load_series
 from uzner.models.pretrained import resolve_pretrained_snapshot
@@ -27,6 +28,8 @@ class AlignmentSummary:
     windows: int
     supervised_tokens: int
     masked_tokens: int
+    gold_spans: int | None = None
+    represented_spans: int | None = None
 
 
 def parse_args() -> argparse.Namespace:
@@ -47,6 +50,8 @@ def _signature(config: ExperimentConfig) -> tuple[object, ...]:
         config.tokenization.max_length,
         config.tokenization.stride,
         config.model.tag_scheme,
+        config.model.architecture,
+        config.data_config,
     )
 
 
@@ -64,8 +69,24 @@ def _check_split(
         tokenizer,
         config.tokenization,
         config.model.tag_scheme,
-        with_labels=True,
+        with_labels=config.model.architecture == "token_tagging",
     )
+    if config.model.architecture == "span":
+        span_features = with_span_targets(features, documents)
+        coverage = span_coverage(span_features, documents)
+        return AlignmentSummary(
+            config.run_id,
+            split,
+            len(documents),
+            len(features),
+            sum(
+                sum(start < end for start, end in item.offsets) - len(item.ignored_tokens)
+                for item in span_features
+            ),
+            sum(len(item.ignored_tokens) for item in span_features),
+            coverage["gold"],
+            coverage["represented"],
+        )
     labels = (label for feature in features for label in feature.labels or ())
     supervised = 0
     masked = 0

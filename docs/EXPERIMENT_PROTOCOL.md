@@ -33,9 +33,13 @@
 - одинаковое effective-число окон на optimizer step и training budget;
 - одинаковый способ объединения окон;
 - один и тот же exact-span evaluator;
-- для двух лучших конфигураций — минимум три seed с `mean ± std`.
+- текущие серии используют один зафиксированный seed 42; обязательного multi-seed этапа нет.
 
 ## Обязательные отчёты
+
+Следующие этапы: [2B — encoder continuation](ENCODER_CONTINUATION.md),
+[3 — Biaffine и GlobalPointer](THIRD_SERIES.md),
+[4 — данные и словари](FOURTH_SERIES.md).
 
 Кроме micro/macro и F1 по классам сохраняются:
 

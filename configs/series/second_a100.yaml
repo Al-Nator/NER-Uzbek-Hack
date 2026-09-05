@@ -1,0 +1,7 @@
+series:
+  name: second-a100
+  stages:
+    - name: xlmr-large
+      configs:
+        - configs/experiments/a100/s22_xlmr_large_bioes_constrained.yaml
+        - configs/experiments/a100/s23_xlmr_large_bioes_crf.yaml

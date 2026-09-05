@@ -1,0 +1,6 @@
+series:
+  name: third-bge-global-pointer-a100
+  stages:
+    - name: bge-global-pointer
+      configs:
+        - configs/experiments/a100/s32_bge_m3_retromae_global_pointer.yaml

@@ -12,8 +12,8 @@ from transformers import AutoTokenizer
 
 from uzner.config import load_experiment_config
 from uzner.experiments.series import load_series
+from uzner.models.factory import model_class
 from uzner.models.pretrained import resolve_pretrained_snapshot
-from uzner.models.token_tagger import TokenTagger
 from uzner.training.runtime import resolve_device, validate_context_length
 
 
@@ -48,7 +48,8 @@ def _check_one(config_path: Path, device: torch.device) -> dict[str, object]:
     if not tokenizer.is_fast:
         raise ValueError(f"{config.encoder.name}: нужен fast tokenizer")
     model = (
-        TokenTagger.from_pretrained(config.encoder, config.model, source=snapshot.path)
+        model_class(config.model)
+        .from_pretrained(config.encoder, config.model, source=snapshot.path)
         .to(device)
         .eval()
     )

@@ -14,6 +14,7 @@ from safetensors.torch import load_file, save_file
 from transformers import AutoModel, AutoTokenizer
 
 from uzner.config import ExperimentConfig
+from uzner.models.factory import model_class
 from uzner.models.token_tagger import TokenTagger
 
 
@@ -105,7 +106,7 @@ def load_model_checkpoint(
     if not path.is_dir():
         raise FileNotFoundError(path)
     encoder = AutoModel.from_pretrained(path / "encoder", local_files_only=True)
-    model = TokenTagger(encoder, config.model)
+    model = model_class(config.model)(encoder, config.model)
     missing, unexpected = model.load_state_dict(load_file(path / "head.safetensors"), strict=False)
     missing_head = [name for name in missing if not name.startswith("encoder.")]
     if missing_head or unexpected:

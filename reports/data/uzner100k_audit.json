@@ -1,0 +1,349 @@
+{
+  "files": [
+    {
+      "duplicate_ids": 0,
+      "duplicate_normalized_text": 0,
+      "examples": [],
+      "file": "uzner_dev_bioes.jsonl",
+      "invalid_offsets": 0,
+      "labels": {
+        "CARDINAL": 171,
+        "DATE": 355,
+        "DOC": 60,
+        "EVENT": 250,
+        "FAC": 154,
+        "GPE": 1042,
+        "LAW": 63,
+        "LOC": 1567,
+        "MONEY": 243,
+        "NORP": 117,
+        "ORDINAL": 60,
+        "ORG": 1542,
+        "PER": 1856,
+        "PERCENT": 72,
+        "POSITION": 194,
+        "PRODUCT": 293,
+        "QUANTITY": 75,
+        "TIME": 131
+      },
+      "official_overlap": {
+        "dev": 4,
+        "train": 16
+      },
+      "promoted_synthetic": 900,
+      "records": 2000,
+      "script": {
+        "latin": 2000
+      },
+      "sha256": "e26fa2eff88a98bd416fdf2c74a67a8adf92cfeec63c336bcfac598b28df8e2e",
+      "source_original": {
+        "auxiliary": 900,
+        "reviewed": 200,
+        "reviewed_aux": 500,
+        "weak_real": 400
+      },
+      "sources": {
+        "corpusNER2015": 200,
+        "dataset2": 500,
+        "uzebk_ner_10k_final": 900,
+        "uzsentiNER_30000": 400
+      },
+      "surface_mismatch": 0,
+      "synthetic_original": {
+        "false": 1100,
+        "true": 900
+      },
+      "synthetic_primary": {
+        "false": 2000
+      },
+      "token_tag_length_mismatch": 0
+    },
+    {
+      "duplicate_ids": 0,
+      "duplicate_normalized_text": 1,
+      "examples": [],
+      "file": "uzner_gold_candidate_bioes.jsonl",
+      "invalid_offsets": 0,
+      "labels": {
+        "CARDINAL": 667,
+        "DATE": 1119,
+        "DOC": 180,
+        "EVENT": 729,
+        "FAC": 518,
+        "GPE": 999,
+        "LAW": 189,
+        "LOC": 6177,
+        "MONEY": 840,
+        "NORP": 290,
+        "ORDINAL": 180,
+        "ORG": 5861,
+        "PER": 4302,
+        "PERCENT": 180,
+        "POSITION": 1012,
+        "PRODUCT": 965,
+        "QUANTITY": 180,
+        "TIME": 444
+      },
+      "official_overlap": {
+        "dev": 2,
+        "train": 6
+      },
+      "promoted_synthetic": 3000,
+      "records": 10000,
+      "script": {
+        "latin": 10000
+      },
+      "sha256": "3c3b8838c1c2f5dca4de7304cbad7567de22e9e10dcb81dea72e519e56c78242",
+      "source_original": {
+        "auxiliary": 3000,
+        "reviewed": 1800,
+        "reviewed_aux": 4500,
+        "weak_real": 700
+      },
+      "sources": {
+        "corpusNER2015": 1800,
+        "dataset2": 4500,
+        "uzebk_ner_10k_final": 3000,
+        "uzsentiNER_30000": 700
+      },
+      "surface_mismatch": 0,
+      "synthetic_original": {
+        "false": 7000,
+        "true": 3000
+      },
+      "synthetic_primary": {
+        "false": 10000
+      },
+      "token_tag_length_mismatch": 0
+    },
+    {
+      "duplicate_ids": 0,
+      "duplicate_normalized_text": 0,
+      "examples": [],
+      "file": "uzner_hard_eval_bioes.jsonl",
+      "invalid_offsets": 0,
+      "labels": {
+        "DATE": 39,
+        "EVENT": 28,
+        "FAC": 54,
+        "GPE": 122,
+        "LAW": 1,
+        "LOC": 239,
+        "MONEY": 12,
+        "NORP": 2,
+        "ORG": 187,
+        "PER": 117,
+        "PRODUCT": 6,
+        "QUANTITY": 2
+      },
+      "official_overlap": {
+        "dev": 1,
+        "train": 1
+      },
+      "promoted_synthetic": 269,
+      "records": 269,
+      "script": {
+        "latin": 269
+      },
+      "sha256": "a2f3f24ef620ee3d7a9f63a959e44a0f93b1f14f31153a356df001d18a1e66bf",
+      "source_original": {
+        "auxiliary": 269
+      },
+      "sources": {
+        "uzebk_ner_10k_final": 269
+      },
+      "surface_mismatch": 0,
+      "synthetic_original": {
+        "true": 269
+      },
+      "synthetic_primary": {
+        "false": 269
+      },
+      "token_tag_length_mismatch": 0
+    },
+    {
+      "duplicate_ids": 0,
+      "duplicate_normalized_text": 0,
+      "examples": [],
+      "file": "uzner_test_bioes.jsonl",
+      "invalid_offsets": 0,
+      "labels": {
+        "CARDINAL": 200,
+        "DATE": 273,
+        "DOC": 60,
+        "EVENT": 242,
+        "FAC": 157,
+        "GPE": 747,
+        "LAW": 60,
+        "LOC": 1291,
+        "MONEY": 314,
+        "NORP": 107,
+        "ORDINAL": 60,
+        "ORG": 1248,
+        "PER": 1342,
+        "PERCENT": 60,
+        "POSITION": 214,
+        "PRODUCT": 206,
+        "QUANTITY": 60,
+        "TIME": 114
+      },
+      "official_overlap": {
+        "dev": 3,
+        "train": 16
+      },
+      "promoted_synthetic": 900,
+      "records": 2000,
+      "script": {
+        "latin": 2000
+      },
+      "sha256": "52819f10cce238ce33eb30adca934420a1ef27a2485ad9f43c07eff8d94e3198",
+      "source_original": {
+        "auxiliary": 900,
+        "reviewed": 200,
+        "reviewed_aux": 500,
+        "weak_real": 400
+      },
+      "sources": {
+        "corpusNER2015": 200,
+        "dataset2": 500,
+        "uzebk_ner_10k_final": 900,
+        "uzsentiNER_30000": 400
+      },
+      "surface_mismatch": 0,
+      "synthetic_original": {
+        "false": 1100,
+        "true": 900
+      },
+      "synthetic_primary": {
+        "false": 2000
+      },
+      "token_tag_length_mismatch": 0
+    },
+    {
+      "duplicate_ids": 0,
+      "duplicate_normalized_text": 1,
+      "examples": [],
+      "file": "uzner_train_bioes.jsonl",
+      "invalid_offsets": 0,
+      "labels": {
+        "CARDINAL": 7604,
+        "DATE": 18623,
+        "DOC": 5000,
+        "EVENT": 5000,
+        "FAC": 7879,
+        "GPE": 5304,
+        "LAW": 5000,
+        "LOC": 21956,
+        "MONEY": 5000,
+        "NORP": 5000,
+        "ORDINAL": 5000,
+        "ORG": 15029,
+        "PER": 20809,
+        "PERCENT": 5000,
+        "POSITION": 9227,
+        "PRODUCT": 8011,
+        "QUANTITY": 5000,
+        "TIME": 5000
+      },
+      "official_overlap": {
+        "dev": 4,
+        "train": 39
+      },
+      "promoted_synthetic": 34548,
+      "records": 100000,
+      "script": {
+        "latin": 99903,
+        "mixed": 97
+      },
+      "sha256": "84dbd9378023453d10c064d376e32b53908f5d6fd45d281026e91c06575e8473",
+      "source_original": {
+        "auxiliary": 25651,
+        "reviewed": 452,
+        "reviewed_aux": 6500,
+        "synthetic": 38897,
+        "weak_real": 28500
+      },
+      "sources": {
+        "corpusNER2015": 452,
+        "dataset2": 6500,
+        "synthetic_doc": 5,
+        "synthetic_doc_balanced": 724,
+        "synthetic_doc_v2": 517,
+        "synthetic_doc_v3": 276,
+        "synthetic_doc_v4": 163,
+        "synthetic_doc_v5": 313,
+        "synthetic_doc_v6": 240,
+        "synthetic_event": 23,
+        "synthetic_event_balanced": 693,
+        "synthetic_event_v2": 600,
+        "synthetic_event_v3": 216,
+        "synthetic_event_v4": 122,
+        "synthetic_event_v5": 212,
+        "synthetic_fac_balanced": 58,
+        "synthetic_fac_cross": 4636,
+        "synthetic_fac_v2": 414,
+        "synthetic_fac_v3": 67,
+        "synthetic_gpe_v2": 2,
+        "synthetic_law": 6,
+        "synthetic_law_balanced": 1831,
+        "synthetic_law_v2": 138,
+        "synthetic_law_v3": 162,
+        "synthetic_law_v4": 82,
+        "synthetic_law_v5": 189,
+        "synthetic_law_v6": 53,
+        "synthetic_money_balanced": 1571,
+        "synthetic_money_v2": 516,
+        "synthetic_money_v3": 307,
+        "synthetic_money_v4": 178,
+        "synthetic_norp": 59,
+        "synthetic_norp_balanced": 1340,
+        "synthetic_norp_v2": 1021,
+        "synthetic_norp_v3": 480,
+        "synthetic_norp_v4": 330,
+        "synthetic_norp_v5": 90,
+        "synthetic_ordinal": 30,
+        "synthetic_ordinal_balanced": 1418,
+        "synthetic_ordinal_v2": 1118,
+        "synthetic_ordinal_v3": 586,
+        "synthetic_ordinal_v4": 185,
+        "synthetic_org_cross": 152,
+        "synthetic_percent_balanced": 1852,
+        "synthetic_percent_v2": 521,
+        "synthetic_percent_v3": 480,
+        "synthetic_percent_v4": 4,
+        "synthetic_quantity": 17,
+        "synthetic_quantity_balanced": 1295,
+        "synthetic_quantity_v2": 818,
+        "synthetic_quantity_v3": 544,
+        "synthetic_quantity_v4": 4,
+        "synthetic_time_cross": 1975,
+        "synthetic_time_v2": 252,
+        "synthetic_time_v3": 12,
+        "synthetic_v6": 10000,
+        "uzebk_ner_10k_final": 25651,
+        "uzsentiNER_30000": 28500
+      },
+      "surface_mismatch": 0,
+      "synthetic_original": {
+        "false": 35452,
+        "true": 64548
+      },
+      "synthetic_primary": {
+        "false": 70000,
+        "true": 30000
+      },
+      "token_tag_length_mismatch": 0
+    }
+  ],
+  "limitations": [
+    "Не проверяет смысл меток и соответствие BIOES символьным entities",
+    "Не выявляет near-duplicates и предложения внутри длинных документов",
+    "Сведения original/primary являются метаданными поставщика"
+  ],
+  "normalization": "NFKC/casefold/apostrophes/whitespace; full-text equality only",
+  "official_sha256": {
+    "dev": "7e5d96a1de83311e3acb33a3c28ed8e13783141143c8eb83e86fb329a795e4d0",
+    "train": "b3281c93aeb28353384b749627a4a82217cdd250a607a3ea3803363b31718346"
+  },
+  "schema_version": 1
+}

@@ -9,10 +9,14 @@
 Сейчас в репозитории есть исходный комплект организаторов, единые доменные
 типы, загрузка и проверка нескольких источников данных, BIO/BIOES, softmax/CRF,
 constrained decoding, exact-span и диагностические метрики, полный train/resume-контур,
-MLflow и конфигурации первых двух серий. Все запуски первой серии выполнены; результаты
+MLflow, Biaffine/GlobalPointer и конфигурации серий 1–3. Все запуски первой серии выполнены; результаты
 после исправления whitespace-offsets сохранены в канонических run-каталогах с
-suffix `s1-offsetfix-mlflow-r2`. Вторая серия sequence-моделей подготовлена, но
-полные результаты ещё не получены.
+suffix `s1-offsetfix-mlflow-r2`. Вторая серия sequence-моделей завершена;
+лучший результат — XLM-R-large BIOES constrained, exact micro-F1 `0.90101`.
+Серии 2B и 3 выполнены на A100: текущий номинальный лучший —
+BGE-M3-RetroMAE + GlobalPointer после low-LR продолжения (s33), exact micro-F1
+`0.90670`. s30 прерван и сохранён отдельно как неудачный частичный результат.
+Подробные результаты: [журнал экспериментов](docs/EXPERIMENTS.md).
 
 ## Оглавление
 
@@ -21,6 +25,7 @@ suffix `s1-offsetfix-mlflow-r2`. Вторая серия sequence-моделей
 - [Данные](#data)
 - [Эксперименты](#experiments)
 - [Запуск обучения](#training)
+- [Удалённый A100](#remote-a100)
 - [Метрики и артефакты](#artifacts)
 - [Установка через uv](#setup)
 - [Проверки](#checks)
@@ -35,11 +40,16 @@ suffix `s1-offsetfix-mlflow-r2`. Вторая серия sequence-моделей
 - Подготовлен полный путь `train → exact eval → best/last → report`, включая resume.
 - Первая серия завершена: девять полных запусков имеют статус `complete` и
   соответствующие завершённые MLflow run-ы.
-- Лучший encoder — mDeBERTa-v3-base: exact micro-F1 `0.8804`, best epoch 5.
+- Лучший encoder первой серии — mDeBERTa-v3-base: exact micro-F1 `0.8804`, best epoch 5.
 - Лучший decoding на XLM-R-base — BIOES + CRF: exact micro-F1 `0.8756`,
   `+0.0206` к BIO/softmax/greedy.
 - Вторая серия переносит BIOES constrained и BIOES + CRF на mDeBERTa-v3-base
-  и XLM-R-large. Её результаты пока не заявляются.
+  и XLM-R-large. `s20` достиг `0.8963`, `s21` — `0.8984`, `s22` — **`0.90101`**,
+  `s23` — `0.89827`. Два последних run-а выполнены на A100.
+- [Общая очередь A100](docs/A100_QUEUE.md): s24 → s25 → s30 → s31, по одному обучению.
+- [Серия 2B](docs/ENCODER_CONTINUATION.md): BGE и XLM-V; на A100 оба используют обычный AdamW.
+- [Серия 3](docs/THIRD_SERIES.md): XLM-R-large + Biaffine и GlobalPointer на A100 после 2B.
+- [Серия 4](docs/FOURTH_SERIES.md): план абляций данных и аудит UzNER-100K.
 - Все новые эксперименты обязаны сохранять разрешённый конфиг, data hashes,
   метрики, предсказания, MLflow run и два checkpoint: `best` и `last`.
 - Полноценные модельные эксперименты выполняются на GPU. CPU используется для
@@ -64,8 +74,8 @@ mlruns/                        SQLite и лёгкие MLflow-артефакты,
 ```
 
 Код модели не должен знать, из какого файла пришли данные. Оценка получает
-только финальные символьные spans, поэтому будущие span-level и set-prediction
-архитектуры смогут использовать тот же evaluator.
+только финальные символьные spans; token/span модели уже используют один evaluator.
+Будущие set-prediction архитектуры сохранят этот контракт.
 
 [Наверх](#top)
 
@@ -115,6 +125,16 @@ uv run python scripts/validate_experiment.py \
 Вторая серия sequence-моделей описана в
 [`docs/SECOND_SERIES.md`](docs/SECOND_SERIES.md). Её четыре run-а не включают
 span-based архитектуры.
+
+Основной запуск продолжения encoder-ов и span-head на A100 (из локального терминала):
+
+```bash
+uv run python scripts/remote_experiments.py --remote-experiment uzner-continuation-a100 start \
+  --series configs/series/continuation_a100.yaml --stage all \
+  --run-suffix a100-continuation-v1 --session uzner-s24-s31
+```
+
+Проверки, логи и возврат в MLflow: [`A100_QUEUE.md`](docs/A100_QUEUE.md).
 
 [Наверх](#top)
 
@@ -178,6 +198,26 @@ uv run python scripts/run_series.py \
   --stage all \
   --run-suffix s2-sequence-v1
 ```
+
+[Наверх](#top)
+
+<a id="remote-a100"></a>
+
+## Удалённый A100
+
+`s22` и `s23` можно запустить на A100-хосте `alnator` из локального
+корня проекта:
+
+```bash
+uv run --extra train python scripts/remote_experiments.py prepare --preflight
+uv run --extra train python scripts/remote_experiments.py start
+```
+
+Обучение продолжается в remote zellij после закрытия SSH. Remote
+MLflow открывается через tunnel на `http://127.0.0.1:5001`, а готовые
+run-ы возвращаются через проверяемый `rsync` и импорт MLflow.
+Команды для status, live log, tunnel и sync:
+[`docs/REMOTE_EXPERIMENTS.md`](docs/REMOTE_EXPERIMENTS.md).
 
 [Наверх](#top)
 
@@ -255,6 +295,7 @@ make check
 - [Протокол экспериментов](docs/EXPERIMENT_PROTOCOL.md)
 - [Первая серия](docs/FIRST_SERIES.md)
 - [Вторая серия](docs/SECOND_SERIES.md)
+- [Удалённые эксперименты на A100](docs/REMOTE_EXPERIMENTS.md)
 - [Артефакты запуска](docs/ARTIFACTS.md)
 - [Трекинг экспериментов](docs/EXPERIMENT_TRACKING.md)
 - [Журнал экспериментов](docs/EXPERIMENTS.md)

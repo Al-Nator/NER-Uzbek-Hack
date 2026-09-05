@@ -3,6 +3,12 @@
 `runs/<run_id>/` — единица воспроизводимости. Каталог не перезаписывается;
 продолжение возможно только через `--resume` из `checkpoints/last`.
 
+Новые runs также сохраняют `environment/source.tar.gz` и `source_manifest.json`
+с фактически исполняемыми Python/YAML и pyproject, включая untracked-код.
+Это дополняет git commit/dirty и uv.lock; данные и веса в snapshot не входят.
+Span-модели добавляют `metrics/span_coverage.json`: достижимость gold-границ
+во всех окнах до обучения. Оба вида лёгких артефактов публикуются в MLflow.
+
 ```text
 runs/<run_id>/
 ├── resolved_config.yaml

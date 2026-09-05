@@ -1,5 +1,15 @@
 # Журнал экспериментов
 
+Измеренные продолжения (см. отдельные отчёты):
+[2B: encoder continuation](ENCODER_CONTINUATION.md),
+[3: Biaffine/GlobalPointer на A100](THIRD_SERIES.md).
+[Серия 4](FOURTH_SERIES.md) пока является планом работы с данными.
+Smoke-проверки не включаются в таблицы F1 ниже.
+В серии 3 s31 завершился с 0.90164, s32 — 0.90595, s33 — **0.90670**
+(номинальный лучший, небольшое преимущество; значимость не проверена).
+s30 прерван: частичный best 0.64889 не включается в рейтинг полных runs.
+Текущий план вычислений — [единая очередь на A100](A100_QUEUE.md).
+
 Фактические результаты добавляются только после появления полного набора артефактов.
 Ниже приведена каноническая исправленная серия `s1-offsetfix-mlflow-r2`; все
 метрики рассчитаны на одинаковом dev по exact совпадению `(label, start, end)`.
@@ -29,5 +39,38 @@
   как quality-кандидат; constrained остаётся быстрым кандидатом.
 - Все числа относятся только к исправленной серии с suffix
   `s1-offsetfix-mlflow-r2`; девять run-ов завершены и сохранены в MLflow.
-- Полная последовательная серия заняла `241.6` минуты. Первичный отбор выполнен
-  на seed 42; финалистов нужно подтвердить минимум на трёх seed.
+- Полная последовательная серия заняла `241.6` минуты.
+
+## Вторая серия: завершена
+
+| Run ID | Encoder / decoding | P | R | Micro-F1 | Epoch | Мин. |
+|---|---|---:|---:|---:|---:|---:|
+| `s20_mdeberta_v3_base_bioes_constrained_s2-sequence-v1` | mDeBERTa, BIOES constrained | 0.8907 | 0.9019 | 0.8963 | 5 | 62.1 |
+| `s21_mdeberta_v3_base_bioes_crf_s2-sequence-v1` | mDeBERTa, BIOES CRF | 0.8967 | 0.9001 | **0.8984** | 5 | 43.1 |
+| `s22_xlmr_large_bioes_constrained_s2-sequence-a100-v2` | XLM-R-large, BIOES constrained | 0.89868 | 0.90335 | **0.90101** | 5 | 23.6 (A100) |
+| `s23_xlmr_large_bioes_crf_s2-sequence-a100-v2` | XLM-R-large, BIOES CRF | 0.89109 | 0.90556 | 0.89827 | 4 | 90.4 (A100) |
+
+Победитель — `s22`: CRF в `s23` уступил ему `0.00274` micro-F1.
+Числа относятся к best checkpoint; s23 закончил пять эпох, best — четвёртая.
+Продолжение: [`ENCODER_CONTINUATION.md`](ENCODER_CONTINUATION.md).
+
+## Серии 2B и 3: актуальные результаты
+
+| Run | Изменение | Best exact micro-F1 | Best epoch | Статус |
+|---|---|---:|---:|---|
+| s24 | BGE-M3-RetroMAE, BIOES constrained | 0.90205 | 4 | complete |
+| s25 | XLM-V-base, BIOES constrained | 0.87557 | 5 | complete |
+| s30 | XLM-R-large, Biaffine | 0.64889* | 1 | interrupted / KILLED |
+| s31 | XLM-R-large, GlobalPointer | 0.90164 | 5 | complete |
+| s32 | BGE-M3-RetroMAE, GlobalPointer | 0.90595 | 5 | complete |
+| s33 | s32 epoch 5 → две эпохи low-LR, reset AdamW | **0.90670** | 1 дополнительная | complete |
+
+\* s30 остановлен пользователем на третьей эпохе; число относится к лучшей из
+двух завершённых эпох, не участвует в рейтинге полных запусков.
+s24–s32 используют suffix `a100-continuation-v1`, s33 — `a100-low-lr-v1`.
+Вторая дополнительная эпоха s33: 0.90586, то есть ниже исходного s32.
+
+Проверка порогов фиксированного s32: лучший выбранный на dev порог 0.35 дал
+0.90620 против исходных 0.90595 при 0.50. Это eval-only подбор, не новый
+обученный encoder и не независимая оценка. Полная таблица и происхождение
+checkpoint-ов: [`THIRD_SERIES.md`](THIRD_SERIES.md).

@@ -64,7 +64,7 @@ def train_epoch(
         labels = batch.labels
         if labels is None:
             raise ValueError("Train batch должен содержать labels")
-        tokens = int((labels >= 0).sum().item())
+        tokens = int((batch.attention_mask if labels.ndim == 4 else labels >= 0).sum().item())
         with torch.autocast(
             device_type=device.type,
             dtype=torch.bfloat16,

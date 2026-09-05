@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 
 from uzner.config import ExperimentConfig, load_data_config, resolve_sources
 from uzner.data.io import load_documents, sha256_file
+from uzner.data.spans import SpanCollator, SpanFeature
 from uzner.data.windows import (
     WindowBatch,
     WindowCollator,
@@ -55,7 +56,11 @@ def make_loader(
         batch_size=batch_size,
         shuffle=shuffle,
         num_workers=num_workers,
-        collate_fn=WindowCollator(tokenizer.pad_token_id),
+        collate_fn=(
+            SpanCollator(tokenizer.pad_token_id)
+            if isinstance(features[0], SpanFeature)
+            else WindowCollator(tokenizer.pad_token_id)
+        ),
         generator=generator,
         pin_memory=torch.cuda.is_available(),
         persistent_workers=num_workers > 0,

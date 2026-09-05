@@ -14,6 +14,7 @@ dependencies = [
 
 [project.optional-dependencies]
 train = [
+  "bitsandbytes==0.45.5",
   "huggingface-hub==1.30.0",
   "mlflow>=3.8,<4",
   "nvidia-ml-py>=13,<14",

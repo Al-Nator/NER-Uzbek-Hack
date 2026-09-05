@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
+import gc
 import math
 from contextlib import suppress
-from dataclasses import dataclass, replace
-from pathlib import Path
+from dataclasses import replace
 
-from torch.optim import AdamW
+import torch
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 
 from uzner.config import load_experiment_config, with_run_suffix
+from uzner.data.spans import span_coverage, with_span_targets
 from uzner.data.windows import build_window_features
 from uzner.evaluation.tokenizer_audit import audit_tokenizer
 from uzner.experiments.artifacts import (
-    RunPaths,
     finalize_artifact_manifest,
     prepare_run_paths,
     write_json,
@@ -22,36 +22,15 @@ from uzner.experiments.artifacts import (
 )
 from uzner.experiments.logging import EpochRecord, RunLogger
 from uzner.experiments.mlflow_tracking import MlflowTracker, start_mlflow_run
+from uzner.models.factory import model_class
 from uzner.models.pretrained import resolve_pretrained_snapshot
-from uzner.models.token_tagger import TokenTagger
 from uzner.training import checkpoint, finalization, runtime
 from uzner.training.data_setup import collect_data_hashes, load_split, make_loader
 from uzner.training.inference import InferenceResult, run_inference
 from uzner.training.loop import train_epoch
-
-
-@dataclass(frozen=True, slots=True)
-class TrainRequest:
-    """Входные параметры одного запуска и безопасного smoke-режима."""
-
-    config_path: Path
-    project_root: Path
-    resume: bool = False
-    max_train_documents: int | None = None
-    max_dev_documents: int | None = None
-    max_epochs: int | None = None
-    publish_summary: bool = True
-    output_root_override: Path | None = None
-    run_id_suffix: str | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class TrainResult:
-    """Итог завершённого запуска."""
-
-    paths: RunPaths
-    best_epoch: int
-    best_micro_f1: float
+from uzner.training.optimizer import make_optimizer
+from uzner.training.requests import TrainRequest, TrainResult
+from uzner.training.warm_start import initial_checkpoint_metadata, load_initial_checkpoint
 
 
 def train_experiment(request: TrainRequest) -> TrainResult:
@@ -102,6 +81,13 @@ def train_experiment(request: TrainRequest) -> TrainResult:
         if request.resume:
             loaded = checkpoint.load_model_checkpoint(paths.last_checkpoint, config, device)
             model, tokenizer, state = loaded.model, loaded.tokenizer, loaded.state
+            del loaded
+        elif config.training.initial_checkpoint:
+            loaded = load_initial_checkpoint(
+                project_root / config.training.initial_checkpoint, config, device
+            )
+            model, tokenizer, state = loaded.model, loaded.tokenizer, loaded.state
+            del loaded
         else:
             snapshot = resolve_pretrained_snapshot(config.encoder)
             tokenizer = AutoTokenizer.from_pretrained(
@@ -113,11 +99,15 @@ def train_experiment(request: TrainRequest) -> TrainResult:
             )
             if not tokenizer.is_fast:
                 raise ValueError("Exact offsets требуют fast tokenizer")
-            model = TokenTagger.from_pretrained(
-                config.encoder,
-                config.model,
-                source=snapshot.path,
-            ).to(device)
+            model = (
+                model_class(config.model)
+                .from_pretrained(
+                    config.encoder,
+                    config.model,
+                    source=snapshot.path,
+                )
+                .to(device)
+            )
             state = checkpoint.TrainerState(0, 0, -1.0, 0, 0)
         runtime.validate_context_length(model.encoder, config)
         if config.training.gradient_checkpointing:
@@ -128,15 +118,25 @@ def train_experiment(request: TrainRequest) -> TrainResult:
             tokenizer,
             config.tokenization,
             config.model.tag_scheme,
-            with_labels=True,
+            with_labels=config.model.architecture == "token_tagging",
         )
         dev_features = build_window_features(
             dev_documents,
             tokenizer,
             config.tokenization,
             config.model.tag_scheme,
-            with_labels=True,
+            with_labels=config.model.architecture == "token_tagging",
         )
+        if config.model.architecture == "span":
+            train_features = with_span_targets(train_features, train_documents)
+            dev_features = with_span_targets(dev_features, dev_documents)
+            write_json(
+                paths.metrics.parent / "span_coverage.json",
+                {
+                    "train": span_coverage(train_features, train_documents),
+                    "dev": span_coverage(dev_features, dev_documents),
+                },
+            )
         audit = audit_tokenizer(dev_documents, tokenizer, config.encoder, config.tokenization)
         train_loader = make_loader(
             train_features,
@@ -154,11 +154,7 @@ def train_experiment(request: TrainRequest) -> TrainResult:
             seed=config.training.seed,
             num_workers=config.training.num_workers,
         )
-        optimizer = AdamW(
-            model.parameters(),
-            lr=config.training.learning_rate,
-            weight_decay=config.training.weight_decay,
-        )
+        optimizer = make_optimizer(model, config.training)
         updates_per_epoch = math.ceil(
             len(train_loader) / config.training.gradient_accumulation_steps
         )
@@ -188,6 +184,11 @@ def train_experiment(request: TrainRequest) -> TrainResult:
             "runtime": runtime_info.to_mapping(),
         }
         write_json(paths.metadata, metadata)
+        if config.training.initial_checkpoint:
+            metadata["initial_checkpoint"] = initial_checkpoint_metadata(
+                project_root / config.training.initial_checkpoint
+            )
+            write_json(paths.metadata, metadata)
         if tracker is not None:
             tracker.log_metadata(metadata)
         logger.start(
@@ -272,6 +273,11 @@ def train_experiment(request: TrainRequest) -> TrainResult:
                 break
 
         if best_inference is None or best_record is None:
+            # Освобождаем last и optimizer до загрузки best на ту же GPU.
+            del model, optimizer, scheduler
+            gc.collect()
+            if device.type == "cuda":
+                torch.cuda.empty_cache()
             loaded_best = checkpoint.load_model_checkpoint(paths.best_checkpoint, config, device)
             best_inference = run_inference(
                 loaded_best.model,

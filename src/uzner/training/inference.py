@@ -17,6 +17,7 @@ from uzner.training.prediction import (
     aggregate_window_logits,
     decode_documents,
 )
+from uzner.training.span_prediction import SpanPredictionAccumulator, SpanWindowScores
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,6 +55,16 @@ def run_inference(
     model.eval()
     started = perf_counter()
     window_outputs: list[WindowLogits] = []
+    span_output = (
+        SpanPredictionAccumulator(
+            model.model_config.span_threshold,
+            tuple(document.hash for document in documents),
+            [],
+            [],
+        )
+        if model.model_config.architecture == "span"
+        else None
+    )
     weighted_loss = 0.0
     loss_weight = 0
     for batch in loader:
@@ -70,6 +81,19 @@ def run_inference(
             weighted_loss += float(output.loss.item()) * weight
             loss_weight += weight
         logits = output.logits.detach().float().cpu()
+        if span_output is not None:
+            probabilities = (
+                logits.softmax(dim=1)[:, 1:]
+                if model.model_config.head == "biaffine"
+                else logits.sigmoid()
+            )
+            for row, index, offsets in zip(
+                probabilities, batch.document_indices, batch.offsets, strict=True
+            ):
+                span_output.add(
+                    index, SpanWindowScores(offsets, row[:, : len(offsets), : len(offsets)].clone())
+                )
+            continue
         for row, document_index, offsets in zip(
             logits, batch.document_indices, batch.offsets, strict=True
         ):
@@ -80,12 +104,15 @@ def run_inference(
                     logits=row[: len(offsets)],
                 )
             )
-    emissions = aggregate_window_logits(
-        tuple(window_outputs),
-        len(documents),
-        average_probabilities=model.model_config.head == "softmax",
-    )
-    predictions = decode_documents(documents, emissions, model)
+    if span_output is not None:
+        predictions = span_output.finish()
+    else:
+        emissions = aggregate_window_logits(
+            tuple(window_outputs),
+            len(documents),
+            average_probabilities=model.model_config.head == "softmax",
+        )
+        predictions = decode_documents(documents, emissions, model)
     raw_edges = collect_chunk_edges(features)
     edges = {document.hash: raw_edges.get(index, ()) for index, document in enumerate(documents)}
     evaluation = evaluate_detailed(documents, predictions, train_documents, edges)

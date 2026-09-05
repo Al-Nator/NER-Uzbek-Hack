@@ -49,6 +49,24 @@ make mlflow
 При росте команды текущий MLflow переносится на общий tracking server. ClearML
 имеет смысл брать, когда понадобится не только сравнение, но и управление GPU-очередью.
 
+## Временный A100-хост
+
+На `alnator` используется отдельный SQLite backend и experiment
+`uzner-second-series-a100`. Его UI доступен через SSH tunnel на
+`http://127.0.0.1:5001`. Обучение не пишет по сети в локальный backend,
+поэтому обрыв SSH не теряет метрики.
+
+Для новой общей очереди s24/s25/s30/s31 задан experiment
+`uzner-continuation-a100`, suffix `a100-continuation-v1`.
+Инструкции запуска и возврата: [`A100_QUEUE.md`](A100_QUEUE.md).
+
+После `status=complete` весь `runs/<run_id>` возвращается через `rsync`
+и проверяется по artifact manifest. Params, tags, полная metric history
+и лёгкие артефакты импортируются в основной experiment
+`uzner-first-series`. Checkpoint-ы остаются только в локальном `runs/`.
+Команды и аварийный повторный импорт описаны в
+[`REMOTE_EXPERIMENTS.md`](REMOTE_EXPERIMENTS.md).
+
 Ссылки: [MLflow Tracking](https://mlflow.org/docs/latest/ml/tracking),
 [ClearML Tasks](https://clear.ml/docs/latest/docs/fundamentals/task/),
 [ClearML architecture](https://clear.ml/docs/latest/docs/getting_started/architecture/),

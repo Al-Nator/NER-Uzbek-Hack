@@ -102,6 +102,9 @@ def capture_environment(
     runtime: RuntimeInfo,
 ) -> None:
     """Сохраняет lock-файл и runtime JSON внутри run-артефактов."""
+    from uzner.experiments.source_snapshot import capture_source
+
+    capture_source(project_root, paths.environment)
     lock_path = project_root / "uv.lock"
     if lock_path.is_file():
         shutil.copy2(lock_path, paths.environment / "uv.lock")
