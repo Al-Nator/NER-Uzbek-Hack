@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import asdict, dataclass, replace
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any, Literal
 
@@ -18,6 +18,7 @@ from uzner.data.sources import (
     resolve_sources,
 )
 from uzner.data.tagging import TagScheme, validate_scheme
+from uzner.research_config import SpanResearchConfig
 
 __all__ = [
     "DataConfig",
@@ -80,9 +81,12 @@ class ModelConfig:
     dropout: float = 0.1
     span_head_size: int = 64
     span_threshold: float = 0.5
+    research: SpanResearchConfig = field(default_factory=SpanResearchConfig)
 
     def __post_init__(self) -> None:
         """Проверяет совместимость головы и декодера."""
+        if self.research.enabled and (self.architecture != "span" or self.head != "global_pointer"):
+            raise ValueError("Research losses поддерживаются только для GlobalPointer")
         if self.architecture == "span":
             if self.head not in {"biaffine", "global_pointer"} or self.decoder != "span":
                 raise ValueError("Span architecture требует biaffine/global_pointer и span decoder")
@@ -116,6 +120,7 @@ class ModelConfig:
             "dropout",
             "span_head_size",
             "span_threshold",
+            "research",
         }
         _check_keys(value, allowed, name="model")
         return cls(
@@ -126,6 +131,7 @@ class ModelConfig:
             dropout=float(value.get("dropout", 0.1)),
             span_head_size=int(value.get("span_head_size", 64)),
             span_threshold=float(value.get("span_threshold", 0.5)),
+            research=SpanResearchConfig.from_mapping(value.get("research", {})),
         )
 
 
@@ -163,6 +169,7 @@ class TrainingConfig:
     eval_batch_size: int = 16
     gradient_accumulation_steps: int = 1
     learning_rate: float = 2e-5
+    head_learning_rate: float | None = None
     weight_decay: float = 0.01
     warmup_ratio: float = 0.1
     max_grad_norm: float = 1.0
@@ -189,6 +196,8 @@ class TrainingConfig:
         invalid = [name for name, value in positive.items() if value <= 0]
         if invalid:
             raise ValueError(f"Параметры должны быть положительными: {invalid}")
+        if self.head_learning_rate is not None and not 0 < self.head_learning_rate < float("inf"):
+            raise ValueError("head_learning_rate должен быть конечным и положительным")
         if self.weight_decay < 0 or not 0 <= self.warmup_ratio < 1:
             raise ValueError("Некорректные weight_decay или warmup_ratio")
         if self.num_workers < 0:
@@ -208,6 +217,7 @@ class TrainingConfig:
             "eval_batch_size",
             "gradient_accumulation_steps",
             "learning_rate",
+            "head_learning_rate",
             "weight_decay",
             "warmup_ratio",
             "max_grad_norm",

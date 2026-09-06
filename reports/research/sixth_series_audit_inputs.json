@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-06",
+  "input_sha256": {
+    "IMPLEMENTATION_PLAN.md": "7b1693a4b690daca36421faab536de7fcc14ac8244a3cdb2dc79cef0a4cad0fa",
+    "RESEARCH_MAP.md": "9a682b0fa4301850d9eb17e762ac9c46c073097f6f732622389bc025c4394d64",
+    "audit_breakthrough.py": "87b13bb56f636aa99b864e90ad8db107728e7e09669fe1feacff8bc3fe49e52d",
+    "pasted-text.txt": "1f2876a6546e7d556b3c77b9bd077617eaa8d7c225a132a57dc59a7926befebc"
+  },
+  "audits": [
+    "artifacts/research_audit/breakthrough_20260906_v1",
+    "artifacts/research_audit/span_vote_20260906_v1"
+  ],
+  "selected": ["s60_mdeberta_gp", "s61_bge_gp_head_lr", "s62_span_majority"],
+  "deferred": "OOF contextual span judge; not trained on in-sample or dev predictions",
+  "bootstrap": {"replicates": 1000, "seed": 42, "unit": "document"},
+  "a100_probe": {
+    "concurrent_with": "s50_bge_gp_aux_bioes_crf_s5-research-v1",
+    "start_unix": 1788655274.8601792,
+    "end_unix": 1788655325.1895797,
+    "gp_steps": 250,
+    "gp_seconds": 50.32939147949219,
+    "gp_tokens": 302129,
+    "gp_tokens_per_second": 6003.033041301703,
+    "classification": "performance diagnostic, no experiment metrics or checkpoints"
+  }
+}

@@ -13,8 +13,18 @@ def make_optimizer(model: nn.Module, config: TrainingConfig) -> Optimizer:
         from bitsandbytes.optim import AdamW8bit
 
         optimizer_type = AdamW8bit
+    parameters = model.parameters()
+    if config.head_learning_rate is not None:
+        encoder = [p for name, p in model.named_parameters() if name.startswith("encoder.")]
+        head = [p for name, p in model.named_parameters() if not name.startswith("encoder.")]
+        if not encoder or not head:
+            raise ValueError("Раздельный LR требует непустые encoder и head")
+        parameters = [
+            {"params": encoder, "lr": config.learning_rate, "name": "encoder"},
+            {"params": head, "lr": config.head_learning_rate, "name": "head"},
+        ]
     return optimizer_type(
-        model.parameters(),
+        parameters,
         lr=config.learning_rate,
         weight_decay=config.weight_decay,
     )

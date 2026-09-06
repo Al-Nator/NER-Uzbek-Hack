@@ -6,6 +6,8 @@ import json
 from collections import Counter
 from pathlib import Path
 
+import pytest
+
 from uzner.config import load_data_config, load_experiment_config, resolve_sources
 from uzner.data.io import load_documents, sha256_file
 
@@ -53,4 +55,15 @@ def test_all_experiment_configs_reference_existing_inputs() -> None:
         for split in ("train", "dev"):
             sources = resolve_sources(data, split=split, project_root=PROJECT_ROOT)
             assert sources
-            assert all(path.is_file() for _, path in sources)
+            for name, path in sources:
+                generated = PROJECT_ROOT / "artifacts/melm/s42_melm_v1/train_augmented.jsonl"
+                if (
+                    experiment.run_id == "s42_bge_gp_melm"
+                    and path == generated
+                    and not path.exists()
+                ):
+                    # Генерация предшествует s42: отсутствующий релиз нельзя незаметно пропустить.
+                    with pytest.raises(FileNotFoundError):
+                        load_documents(((name, path),))
+                else:
+                    assert path.is_file()

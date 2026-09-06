@@ -52,3 +52,24 @@ MLflow хранит интерактивные ряды и лёгкие копи
 Урезанный smoke-run обязан использовать `--smoke-output` вне `runs/`. Код
 блокирует его публикацию в `reports/experiments.csv`. Автотесты используют
 только pytest temporary directories; их результаты не являются экспериментами.
+
+## Frozen research s57/s58
+
+Постобработка фиксированного encoder-а имеет отдельную схему, не выдаётся за
+обычный полный TrainRequest. `runs/s57…` / `runs/s58…` содержат:
+
+- `resolved_config.json`, `metadata.json` с hashes source best и original train/dev;
+- `environment/source.tar.gz`, `source_manifest.json`, `status.json`;
+- `environment/uv.lock`, `artifact_manifest.json` с SHA-256 всех собственных артефактов;
+- `events.jsonl`, `mlflow.json` с ID локального MLflow run;
+- `reference/` и `dev/`: общий metrics JSON, exact predictions, error JSONL;
+- s57: `memory.pt` и `train_groups.json`; encoder не копируется, обучения/эпох нет;
+- s58: `checkpoints/best.pt`, `last.pt` только char-head/optimizer/RNG/алфавит;
+  `epochs/<n>/` хранит dev-оценки каждой эпохи. Автоматический CLI resume для этой
+  исследовательской ветки пока не реализован; состояние last сохранено.
+
+Это независимые frozen-эксперименты с видом `frozen_encoder_research` в MLflow.
+Глобальные/срезовые метрики считаются общим evaluator; без chunk-edge cache срез
+границ окон не рассчитывается, а не подменяется произвольными границами.
+Память и веса не загружаются в MLflow, только лёгкие JSON/логи/source snapshot.
+Полная скорость HTTP-сервиса отдельно ещё не измерена.

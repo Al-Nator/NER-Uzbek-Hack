@@ -128,6 +128,8 @@ class RunLogger:
         gradient_norm: float | None,
         tokens_per_second: float,
         gpu_memory_gib: float,
+        loss_components: dict[str, float] | None = None,
+        head_learning_rate: float | None = None,
     ) -> None:
         """Логирует один интервал обучения."""
         values = {
@@ -137,6 +139,11 @@ class RunLogger:
             "tokens_per_second": tokens_per_second,
             "gpu_memory_gib": gpu_memory_gib,
         }
+        values.update(
+            {f"loss_component/{name}": value for name, value in (loss_components or {}).items()}
+        )
+        if head_learning_rate is not None:
+            values["head_learning_rate"] = head_learning_rate
         self.event("train_step", values, epoch=epoch, step=step)
         if self.tracker is not None:
             self.tracker.log_train_step(values, step=step)

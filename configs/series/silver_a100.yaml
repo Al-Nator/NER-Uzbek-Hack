@@ -1,0 +1,6 @@
+series:
+  name: fourth-external-silver-a100
+  stages:
+    - name: silver
+      configs:
+        - configs/experiments/a100/s45_bge_gp_external_silver.yaml

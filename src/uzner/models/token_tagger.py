@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import torch
@@ -25,6 +25,7 @@ class TaggerOutput:
 
     logits: torch.Tensor
     loss: torch.Tensor | None
+    loss_components: dict[str, torch.Tensor] = field(default_factory=dict)
 
 
 @contextmanager

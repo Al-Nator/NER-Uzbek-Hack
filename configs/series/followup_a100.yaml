@@ -1,0 +1,13 @@
+series:
+  name: full-transliteration-and-targeted-a100
+  stages:
+    - name: full-transliteration
+      configs:
+        - configs/experiments/a100/s43_bge_gp_translit_converter_full.yaml
+        - configs/experiments/a100/s44_bge_gp_translit_luna_full.yaml
+    - name: encoder-head
+      configs:
+        - configs/experiments/a100/s60_mdeberta_gp.yaml
+    - name: head-lr
+      configs:
+        - configs/experiments/a100/s61_bge_gp_head_lr.yaml

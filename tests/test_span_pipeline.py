@@ -10,11 +10,23 @@ from uzner.training.engine import TrainRequest, train_experiment
 
 
 @pytest.mark.parametrize("head", ["biaffine", "global_pointer"])
-def test_span_pipeline_resume_and_no_gold_leakage(tmp_path, head) -> None:
+@pytest.mark.parametrize(
+    "research",
+    [
+        {},
+        {"bioes_crf_weight": 0.25, "boundary_weight": 0.25},
+        {"smoothing": 0.05},
+        {"hard_negative_weight": 0.1},
+    ],
+)
+def test_span_pipeline_resume_and_no_gold_leakage(tmp_path, head, research) -> None:
     """Проверяет сохранение head, оптимизатора, продолжение и общий формат результатов."""
     path = _tiny_project(tmp_path, epochs=2)
     config = yaml.safe_load(path.read_text())
     config["experiment"]["model"] = {"architecture": "span", "head": head, "decoder": "span"}
+    if head == "biaffine" and research:
+        pytest.skip("Дополнительные цели относятся только к GP")
+    config["experiment"]["model"]["research"] = research
     path.write_text(yaml.safe_dump(config))
     request = TrainRequest(
         path,

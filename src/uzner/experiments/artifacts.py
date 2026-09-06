@@ -120,20 +120,25 @@ def write_jsonl(path: Path, values: Iterable[Mapping[str, Any]]) -> None:
 
 def finalize_artifact_manifest(paths: RunPaths) -> tuple[ArtifactEntry, ...]:
     """Хэширует все артефакты и атомарно пишет итоговый манифест."""
+    return finalize_root_manifest(paths.root, paths.manifest)
+
+
+def finalize_root_manifest(root: Path, manifest: Path) -> tuple[ArtifactEntry, ...]:
+    """Хэширует каталог независимо от схемы model/data/frozen-run."""
     entries = tuple(
         ArtifactEntry(
-            path=str(path.relative_to(paths.root)),
+            path=str(path.relative_to(root)),
             bytes=path.stat().st_size,
             sha256=sha256_file(path),
         )
-        for path in sorted(paths.root.rglob("*"))
-        if path.is_file() and path != paths.manifest and not path.name.endswith(".tmp")
+        for path in sorted(root.rglob("*"))
+        if path.is_file() and path != manifest and not path.name.endswith(".tmp")
     )
     write_json(
-        paths.manifest,
+        manifest,
         {
             "schema_version": 1,
-            "run_root": str(paths.root),
+            "run_root": str(root),
             "artifacts": [asdict(entry) for entry in entries],
         },
     )

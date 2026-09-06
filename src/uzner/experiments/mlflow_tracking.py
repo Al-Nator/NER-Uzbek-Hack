@@ -114,6 +114,7 @@ class MlflowTracker:
         names = {
             "loss": "train/loss_step",
             "learning_rate": "optimizer/learning_rate",
+            "head_learning_rate": "optimizer/head_learning_rate",
             "gradient_norm": "optimizer/gradient_norm",
             "tokens_per_second": "runtime/train_tokens_per_second_step",
             "gpu_memory_gib": "runtime/gpu_memory_allocated_gib",
@@ -123,6 +124,13 @@ class MlflowTracker:
             for name, value in values.items()
             if name in names and value is not None
         }
+        metrics.update(
+            {
+                f"train/{name}": float(value)
+                for name, value in values.items()
+                if name.startswith("loss_component/") and value is not None
+            }
+        )
         self.mlflow.log_metrics(metrics, step=step)
 
     def log_reference_epoch(self, values: dict[str, object], *, epoch: int) -> None:

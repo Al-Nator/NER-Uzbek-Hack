@@ -1,0 +1,9 @@
+series:
+  name: fourth-transliteration-matched-a100
+  stages:
+    - name: converter
+      configs:
+        - configs/experiments/a100/s40_bge_global_pointer_translit_converter_matched.yaml
+    - name: luna
+      configs:
+        - configs/experiments/a100/s41_bge_global_pointer_translit_luna_matched.yaml

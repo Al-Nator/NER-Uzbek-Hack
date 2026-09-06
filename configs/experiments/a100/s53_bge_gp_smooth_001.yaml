@@ -1,0 +1,40 @@
+experiment:
+  run_id: s53_bge_gp_smooth_001
+  pipeline: uzner
+  data_config: configs/data/official.yaml
+  output_root: runs
+  primary_metric: exact_micro_f1
+  encoder:
+    name: BAAI/bge-m3-retromae
+    revision: 95c4f81ef8f7911dcac8e384532489c32c8dea64
+    trust_remote_code: false
+    use_safetensors: false
+  model:
+    architecture: span
+    head: global_pointer
+    decoder: span
+    dropout: 0.1
+    span_head_size: 64
+    span_threshold: 0.5
+    research:
+      smoothing: 0.01
+  tokenization:
+    max_length: 512
+    stride: 128
+  training:
+    seed: 42
+    epochs: 5
+    batch_size: 8
+    eval_batch_size: 8
+    gradient_accumulation_steps: 1
+    learning_rate: 0.00002
+    weight_decay: 0.01
+    warmup_ratio: 0.1
+    max_grad_norm: 1.0
+    bf16: true
+    num_workers: 4
+    require_gpu: true
+    gradient_checkpointing: false
+    optimizer: adamw
+    log_every_steps: 25
+    early_stopping_patience: 2

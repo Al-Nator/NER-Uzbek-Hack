@@ -36,6 +36,13 @@ sources -> validation -> tokenization/model -> character spans -> exact scorer
 Будущая `set_prediction` сохраняет общие типы и формат артефактов.
 Архитектурная логика не должна попадать в data loader.
 
+Research-цели GP задаются `model.research` (`research_config.py`): smoothing,
+hard-negative span loss и auxiliary BIOES/CRF, START/END. Все головы разделяют один
+encoder, а inference s50–s56 остаётся GP-only. См. [серию 5](FIFTH_SERIES.md).
+Frozen-варианты памяти и char-head используют `training/frozen.py` и общий decoder;
+их отдельные конфиги лежат в `configs/research/`, а evaluator не дублируется.
+MELM-inspired генерация/фильтр — отдельная подготовка данных перед обычным NER-run.
+
 Pretrained encoder всегда загружается с FP32-параметрами. BF16 включается
 только через CUDA autocast, чтобы optimizer обновлял численно устойчивую
 копию весов.

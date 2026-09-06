@@ -108,9 +108,17 @@ def train_epoch(
                 step=global_step,
                 loss=last_loss,
                 learning_rate=float(scheduler.get_last_lr()[0]),
+                head_learning_rate=(
+                    float(scheduler.get_last_lr()[1])
+                    if config.head_learning_rate is not None
+                    else None
+                ),
                 gradient_norm=norm,
                 tokens_per_second=interval_tokens / elapsed if elapsed else 0.0,
                 gpu_memory_gib=_gpu_memory_gib(device),
+                loss_components={
+                    name: float(value.detach()) for name, value in output.loss_components.items()
+                },
             )
             interval_started = perf_counter()
             interval_tokens = 0

@@ -1,0 +1,11 @@
+run_id: s57_bge_gp_memory_knn_s5-frozen-v1
+source: runs/s32_bge_m3_retromae_global_pointer_a100-continuation-v1
+kind: memory_knn
+parameters:
+  capacity: 100000
+  neighbors: 16
+  temperature: 0.1
+  alpha: 0.2
+  sampling_rate: 0.06
+  block_size: 4096
+  seed: 42

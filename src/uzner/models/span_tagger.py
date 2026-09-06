@@ -6,7 +6,9 @@ from torch.nn import functional as functional
 
 from uzner.config import ModelConfig
 from uzner.domain import LABELS
-from uzner.models.span_heads import BiaffineHead, GlobalPointerHead, global_pointer_loss
+from uzner.models.span_auxiliary import SpanAuxiliary
+from uzner.models.span_heads import BiaffineHead, GlobalPointerHead
+from uzner.models.span_objectives import hard_span_loss, smoothed_pointer_loss
 from uzner.models.token_tagger import TaggerOutput, TokenTagger
 
 
@@ -20,6 +22,7 @@ class SpanTagger(TokenTagger):
         self.dropout = nn.Dropout(config.dropout)
         head_type = BiaffineHead if config.head == "biaffine" else GlobalPointerHead
         self.classifier = head_type(encoder.config.hidden_size, config.span_head_size, len(LABELS))
+        self.auxiliary = SpanAuxiliary(encoder.config.hidden_size, len(LABELS), config.research)
 
     def forward(
         self,
@@ -33,11 +36,23 @@ class SpanTagger(TokenTagger):
         if token_type_ids is not None:
             inputs["token_type_ids"] = token_type_ids
         hidden = self.encoder(**inputs).last_hidden_state
-        logits = self.classifier(self.dropout(hidden))
+        hidden = self.dropout(hidden)
+        logits = self.classifier(hidden)
         loss = None
+        components = {}
         if labels is not None:
             if self.model_config.head == "global_pointer":
-                loss = global_pointer_loss(logits, labels)
+                research = self.model_config.research
+                loss = smoothed_pointer_loss(logits, labels, research.smoothing)
+                components["gp"] = loss
+                components.update(self.auxiliary(hidden, labels))
+                if research.hard_negative_weight:
+                    components["hard_negative"] = hard_span_loss(
+                        logits, labels, research.hard_negative_topk
+                    )
+                for name in ("bioes_crf", "boundary", "hard_negative"):
+                    if name in components:
+                        loss = loss + getattr(research, name + "_weight") * components[name]
             else:
                 # Класс 0 означает NONE; -100 исключает непредставимые пары.
                 valid = (labels >= 0).any(dim=1)
@@ -49,4 +64,4 @@ class SpanTagger(TokenTagger):
                     if valid.any()
                     else logits.float().sum() * 0
                 )
-        return TaggerOutput(logits, loss)
+        return TaggerOutput(logits, loss, components)

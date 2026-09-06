@@ -1,0 +1,19 @@
+data:
+  max_length: 512
+  stride: 128
+  sources:
+    - name: official_train_v1
+      path: ner_uz_hackathon_participant/data/train.jsonl
+      split: train
+      kind: gold
+      weight: 1.0
+    - name: transliteration_luna_full_v2
+      path: artifacts/series4/transliteration_full_v2/luna_full.jsonl
+      split: train
+      kind: synthetic
+      weight: 1.0
+    - name: official_dev_v1
+      path: ner_uz_hackathon_participant/data/dev.jsonl
+      split: dev
+      kind: gold
+      weight: 1.0

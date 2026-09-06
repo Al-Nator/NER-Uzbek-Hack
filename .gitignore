@@ -25,3 +25,6 @@ artifacts/*
 .vscode/
 .DS_Store
 .ipynb_checkpoints/
+
+# Снимки внешних корпусов; каталог и команды воспроизведения хранятся отдельно.
+/data/external/20260905_v1/

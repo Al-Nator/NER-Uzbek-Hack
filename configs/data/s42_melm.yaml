@@ -1,0 +1,14 @@
+data:
+  sources:
+    - name: official_train_v1
+      path: ner_uz_hackathon_participant/data/train.jsonl
+      split: train
+      kind: gold
+    - name: melm_inspired_v1
+      path: artifacts/melm/s42_melm_v1/train_augmented.jsonl
+      split: train
+      kind: synthetic
+    - name: official_dev_v1
+      path: ner_uz_hackathon_participant/data/dev.jsonl
+      split: dev
+      kind: gold

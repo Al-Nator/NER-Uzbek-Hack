@@ -1,0 +1,5 @@
+run_id: s62_span_majority_full-targeted-v1
+sources:
+  - s33_bge_global_pointer_low_lr_a100-low-lr-v1
+  - s21_mdeberta_v3_base_bioes_crf_s2-sequence-v1
+  - s31_xlmr_large_global_pointer_a100-continuation-v1

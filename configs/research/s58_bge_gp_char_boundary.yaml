@@ -1,0 +1,12 @@
+run_id: s58_bge_gp_char_boundary_s5-frozen-v1
+source: runs/s32_bge_m3_retromae_global_pointer_a100-continuation-v1
+kind: char_boundary
+parameters:
+  radius: 4
+  context: 6
+  epochs: 5
+  batch_size: 256
+  learning_rate: 0.001
+  max_examples: 100000
+  confidence: 0.6
+  seed: 42

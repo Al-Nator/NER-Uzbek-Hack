@@ -1,0 +1,6 @@
+series:
+  name: fourth-silver-luna-a100
+  stages:
+    - name: silver-luna
+      configs:
+        - configs/experiments/a100/s46_bge_gp_silver_luna.yaml

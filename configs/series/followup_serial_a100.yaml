@@ -1,0 +1,8 @@
+series:
+  name: full-transliteration-and-mdeberta-after-fifth
+  stages:
+    - name: all-followups
+      configs:
+        - configs/experiments/a100/s43_bge_gp_translit_converter_full.yaml
+        - configs/experiments/a100/s44_bge_gp_translit_luna_full.yaml
+        - configs/experiments/a100/s60_mdeberta_gp.yaml

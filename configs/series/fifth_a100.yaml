@@ -1,0 +1,16 @@
+series:
+  name: fifth-research-a100
+  stages:
+    - name: smoothing
+      configs:
+        - configs/experiments/a100/s53_bge_gp_smooth_001.yaml
+        - configs/experiments/a100/s54_bge_gp_smooth_005.yaml
+        - configs/experiments/a100/s55_bge_gp_smooth_010.yaml
+    - name: hard-negatives
+      configs:
+        - configs/experiments/a100/s56_bge_gp_hard_negatives.yaml
+    - name: multihead
+      configs:
+        - configs/experiments/a100/s50_bge_gp_aux_bioes_crf.yaml
+        - configs/experiments/a100/s51_bge_gp_aux_start_end.yaml
+        - configs/experiments/a100/s52_bge_gp_aux_both.yaml
