@@ -1,0 +1,74 @@
+name: posthoc_20260907_v1
+experiment: uzner-posthoc-decoding
+train: ner_uz_hackathon_participant/data/train.jsonl
+dev: ner_uz_hackathon_participant/data/dev.jsonl
+candidates: artifacts/posthoc_20260907_v1/s33_candidates.jsonl
+sources:
+  s62: runs/s62_span_majority_full-targeted-v1/predictions/dev.jsonl
+  s33: runs/s33_bge_global_pointer_low_lr_a100-low-lr-v1/predictions/dev.jsonl
+  s21: runs/s21_mdeberta_v3_base_bioes_crf_s2-sequence-v1/predictions/dev.jsonl
+  s31: runs/s31_xlmr_large_global_pointer_a100-continuation-v1/predictions/dev.jsonl
+  s45: runs/s45_bge_gp_external_silver_s4-silver-v1/predictions/dev.jsonl
+  s48: runs/s48_bge_gp_silver_interim_local-interim-v1/predictions/dev.jsonl
+variants:
+  # Контроли, не считаются новыми гипотезами.
+  - {name: d00_s62}
+  - {name: d01_s33, base: s33}
+  - {name: d02_s45, base: s45}
+  - {name: d03_s48, base: s48}
+  # Повторы: одно изменение относительно исходного ансамбля.
+  - {name: d10_repeat_4, operation: repeat}
+  - {name: d11_repeat_2, operation: repeat, min_length: 2}
+  - {name: d12_repeat_6, operation: repeat, min_length: 6}
+  - {name: d13_repeat_8, operation: repeat, min_length: 8}
+  - {name: d14_repeat_name, operation: repeat, labels: [NAME]}
+  - {name: d15_repeat_org, operation: repeat, labels: [ORG]}
+  - {name: d16_repeat_geo, operation: repeat, labels: [GEO]}
+  - {name: d17_repeat_normalized, operation: repeat, normalized: true}
+  - {name: d18_repeat_two_seeds, operation: repeat, min_seeds: 2}
+  - {name: d19_repeat_name_org, operation: repeat, labels: [NAME, ORG]}
+  # Границы: ни один вариант не добавляет слов из dev-разметки.
+  - {name: d20_right_word, operation: boundary, boundary: right}
+  - {name: d21_both_word, operation: boundary, boundary: word}
+  - {name: d22_trim_quotes, operation: boundary, boundary: trim}
+  - {name: d23_conservative_boundary, operation: boundary}
+  - {name: d24_dictionary_boundary, operation: boundary, boundary: dictionary}
+  # Словарь: support — число train-документов; propensity учитывает фон.
+  - {name: d30_lex_raw_2_090, operation: lex_add, support: 2, propensity: 0.9}
+  - {name: d31_lex_raw_3_095, operation: lex_add}
+  - {name: d32_lex_raw_5_100, operation: lex_add, support: 5, propensity: 1.0}
+  - {name: d33_lex_norm_3_090, operation: lex_add, normalized: true, propensity: 0.9}
+  - {name: d34_lex_norm_5_100, operation: lex_add, normalized: true, support: 5, propensity: 1.0}
+  - {name: d35_lex_name, operation: lex_add, labels: [NAME]}
+  - {name: d36_lex_org, operation: lex_add, labels: [ORG]}
+  - {name: d37_lex_geo, operation: lex_add, labels: [GEO]}
+  - {name: d38_relabel_raw, operation: lex_relabel, support: 2, propensity: 0.0, purity: 0.9}
+  - {name: d39_relabel_norm, operation: lex_relabel, normalized: true, support: 2, propensity: 0.0}
+  - {name: d40_short_unknown_2, operation: short, normalized: true, min_length: 2}
+  - {name: d41_short_unknown_3, operation: short, normalized: true, min_length: 3}
+  # Singleton исходного ансамбля требует дополнительного подтверждения.
+  - {name: d50_confirm_s45, operation: confirm}
+  - {name: d51_confirm_s48, operation: confirm, confirmer: s48}
+  - {name: d52_confirm_s45_name, operation: confirm, labels: [NAME]}
+  - {name: d53_confirm_s45_org, operation: confirm, labels: [ORG]}
+  - {name: d54_confirm_s45_geo, operation: confirm, labels: [GEO]}
+  - {name: d55_lex_confirm, operation: lex_confirm}
+  - {name: d56_lex_confirm_norm, operation: lex_confirm, normalized: true}
+  # Порог GP: pre-NMS кэш с floor 0.05, контроль повторного инференса 0.5.
+  - {name: d60_gp_050, operation: gp}
+  - {name: d61_gp_010, operation: gp, threshold: 0.1}
+  - {name: d62_gp_020, operation: gp, threshold: 0.2}
+  - {name: d63_gp_035, operation: gp, threshold: 0.35}
+  - {name: d64_gp_065, operation: gp, threshold: 0.65}
+  - {name: d65_gp_080, operation: gp, threshold: 0.8}
+  - {name: d66_gp_name_020, operation: gp, name_threshold: 0.2}
+  - {name: d67_gp_org_020, operation: gp, org_threshold: 0.2}
+  - {name: d68_gp_optimal_050, operation: gp, selection: optimal}
+  - {name: d69_gp_optimal_020, operation: gp, threshold: 0.2, selection: optimal}
+  - {name: d70_vote_gp_050, operation: gp_vote}
+  - {name: d71_vote_gp_010, operation: gp_vote, threshold: 0.1}
+  - {name: d72_vote_gp_020, operation: gp_vote, threshold: 0.2}
+  - {name: d73_vote_gp_035, operation: gp_vote, threshold: 0.35}
+  - {name: d74_vote_gp_065, operation: gp_vote, threshold: 0.65}
+  - {name: d75_vote_gp_name_020, operation: gp_vote, name_threshold: 0.2}
+  - {name: d76_vote_gp_org_020, operation: gp_vote, org_threshold: 0.2}

@@ -17,6 +17,16 @@ Smoke/test-запуски с `--smoke-output` не создают MLflow run и 
 
 ## Что логируется
 
+Отдельный experiment **`uzner-serving-a100`** содержит полные serving-измерения,
+а не обучение. В нём фиксируются dataset/config/bundle hashes, условия A100,
+throughput, p50/p95/p99, NVML VRAM, exact dev-метрики и span parity.
+Каталоги — `artifacts/serving/benchmarks/`; импорт —
+`scripts/publish_service_benchmarks.py`. Pilot пропускаются, weights/engines
+не копируются. Наличие сохранённого `mlflow.json` предотвращает повторное создание
+того же run; изменение уже опубликованного summary блокируется.
+
+Метрики обучения:
+
 - на optimizer step: loss, learning rate, gradient norm, tokens/s, CUDA memory;
 - на каждой эпохе: train/dev loss, exact micro/macro и классы, TP/FP/FN,
   boundary/error-метрики и все slice-метрики;

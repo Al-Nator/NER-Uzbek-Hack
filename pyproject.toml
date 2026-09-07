@@ -13,6 +13,30 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+research = [
+  "pyahocorasick>=2,<3",
+  "rapidfuzz>=3,<4",
+  "UzTransliterator==0.0.36",
+]
+serve = [
+  "torch==2.6.0",
+  "transformers==5.14.1",
+  "tokenizers==0.22.2",
+  "sentencepiece==0.2.1",
+  "fastapi==0.141.1",
+  "pydantic==2.13.5",
+  "pydantic-settings==2.15.0",
+  "uvicorn==0.52.4",
+  "anyio==4.15.0",
+  "httpx>=0.28,<0.29",
+  "nvidia-ml-py>=13,<14",
+]
+export = [
+  "onnx==1.17.0",
+  "tensorrt-cu12==10.3.0",
+  "tensorrt-cu12-bindings==10.3.0",
+  "tensorrt-cu12-libs==10.3.0",
+]
 train = [
   "bitsandbytes==0.45.5",
   "huggingface-hub==1.30.0",
@@ -47,7 +71,7 @@ torch = { index = "pytorch-cu124" }
 packages = ["src/uzner"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-markers --strict-config --cov=uzner --cov-report=term-missing"
+addopts = "-ra --strict-markers --strict-config --cov=uzner --cov-config=pyproject.toml --cov-branch --cov-report=term-missing"
 markers = ["train: тесты, требующие PyTorch train-extra"]
 testpaths = ["tests"]
 

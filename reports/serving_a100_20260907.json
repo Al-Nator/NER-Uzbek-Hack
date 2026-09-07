@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-07",
+  "system": "s62 + train-only c02 dictionary + exact repeats",
+  "image": "ner-uz-solution:a100-final",
+  "image_id": "sha256:abec7d56440ee94a9addbf63e1d77b67f47b5e7b546695638016c26a23be372c",
+  "archive": {
+    "path": "output/ner-uz-solution-a100-final.tar.zst",
+    "bytes": 11461624865,
+    "sha256": "8b38d9bd5d4521dbd60d4ce96a81f65afc85457c05ef81f9d9a02b0c360232d4",
+    "all_20_oci_blobs_sha256_verified": true,
+    "zstd_stream_verified": true,
+    "image_config_digest": "sha256:d28c2f6bf97e5841426062f1bad1e5c6dc513e1c79c67393fd696bcc1f13fdf1"
+  },
+  "bundle_manifest_sha256": "f615cc1e5e36b05eb6a5f60d56c816071121951a5d1e0bbf418118d5d303b05c",
+  "config_sha256": "28e644a557773e0aa2a78209f2032844877b7932a46a4eeac0f97f51db9081e5",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "measured_driver": "580.173.02",
+  "target_driver": "550.90.07",
+  "target_driver_tested": false,
+  "torch": "2.6.0+cu124",
+  "tensorrt": "10.3.0",
+  "response_cache": false,
+  "public_f1_optimized": null,
+  "public_f1_archived_user_reported": 0.8922,
+  "mlflow_experiment": "uzner-serving-a100",
+  "mlflow_experiment_id": "9",
+  "artifact_root": "artifacts/serving/benchmarks",
+  "closed_loop_concurrency": 1,
+  "closed_loop_rounds": 2,
+  "closed_loop": [
+    {
+      "artifact": "http-torch-dev-b1-c1",
+      "batch": 1,
+      "messages_per_second": 21.943173621457994,
+      "p95_ms": 67.75556807406247,
+      "micro_f1": 0.9163058230465972
+    },
+    {
+      "artifact": "final-dev-b1-c1",
+      "batch": 1,
+      "messages_per_second": 32.36064073750074,
+      "p95_ms": 56.079726899042726,
+      "micro_f1": 0.9166666666666666
+    },
+    {
+      "artifact": "http-torch-dev-b8-c1",
+      "batch": 8,
+      "messages_per_second": 50.87635869814836,
+      "p95_ms": 361.6657129023224,
+      "micro_f1": 0.917458470687092
+    },
+    {
+      "artifact": "final-dev-b8-c1",
+      "batch": 8,
+      "messages_per_second": 61.345375118968086,
+      "p95_ms": 314.4694420043379,
+      "micro_f1": 0.9174098487785962
+    },
+    {
+      "artifact": "final-public-b1-c1",
+      "batch": 1,
+      "messages_per_second": 31.068474075613953,
+      "p95_ms": 53.84719907306135
+    },
+    {
+      "artifact": "final-public-b8-c1",
+      "batch": 8,
+      "messages_per_second": 56.43910221499963,
+      "p95_ms": 437.3212531208992
+    }
+  ],
+  "open_loop_arrival_rate": 30,
+  "open_loop": [
+    {
+      "artifact": "final-dev-open30",
+      "requests": 1500,
+      "messages_per_second": 29.985889149733186,
+      "p95_ms": 629.9996161833405,
+      "max_ms": 989.0283686108887,
+      "errors": 0
+    },
+    {
+      "artifact": "final-public-open30",
+      "requests": 1000,
+      "messages_per_second": 30.001190544318927,
+      "p95_ms": 1336.9146070908755,
+      "max_ms": 1504.10395860672,
+      "errors": 0
+    }
+  ],
+  "final_peak_gpu_memory_mib": 6411.125,
+  "offline_container_contract_passed": true,
+  "official_contract_backend_passed": true,
+  "official_contract_frontend_passed": true
+}

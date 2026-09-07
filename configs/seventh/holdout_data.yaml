@@ -1,0 +1,8 @@
+data:
+  sources:
+  - name: proposer_train
+    path: artifacts/reranker/s7_holdout_v1/proposer_train.jsonl
+    split: train
+  - name: proposer_valid
+    path: artifacts/reranker/s7_holdout_v1/proposer_valid.jsonl
+    split: dev

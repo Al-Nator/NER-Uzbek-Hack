@@ -37,12 +37,18 @@ def read_jsonl(path: Path) -> list[Mapping[str, Any]]:
     return records
 
 
-def load_documents(sources: Sequence[tuple[str, Path]]) -> list[Document]:
+def load_documents(
+    sources: Sequence[tuple[str, Path]], *, require_entities: bool = False
+) -> list[Document]:
     """Загружает документы из нескольких файлов и проверяет уникальность hash."""
     documents: list[Document] = []
     owners: dict[str, str] = {}
     for source_name, path in sources:
         for raw in read_jsonl(path):
+            if require_entities and "entities" not in raw:
+                raise ValueError(f"{path}: для размеченных данных требуется entities[]")
+            if "entities" in raw and not isinstance(raw["entities"], list):
+                raise ValueError(f"{path}: entities должен быть JSON-массивом")
             document = Document.from_mapping(raw, source=source_name)
             previous_source = owners.get(document.hash)
             if previous_source is not None:

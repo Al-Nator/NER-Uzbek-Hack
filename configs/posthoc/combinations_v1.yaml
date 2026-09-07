@@ -1,0 +1,33 @@
+name: posthoc_20260907_combinations_v1
+experiment: uzner-posthoc-decoding
+train: ner_uz_hackathon_participant/data/train.jsonl
+dev: ner_uz_hackathon_participant/data/dev.jsonl
+candidates: artifacts/posthoc_20260907_v1/s33_candidates.jsonl
+sources:
+  s62: runs/s62_span_majority_full-targeted-v1/predictions/dev.jsonl
+  repeats: runs/posthoc_20260907_v1_d10_repeat_4/predictions/dev.jsonl
+  s33: runs/s33_bge_global_pointer_low_lr_a100-low-lr-v1/predictions/dev.jsonl
+  s21: runs/s21_mdeberta_v3_base_bioes_crf_s2-sequence-v1/predictions/dev.jsonl
+  s31: runs/s31_xlmr_large_global_pointer_a100-continuation-v1/predictions/dev.jsonl
+  s45: runs/s45_bge_gp_external_silver_s4-silver-v1/predictions/dev.jsonl
+  s48: runs/s48_bge_gp_silver_interim_local-interim-v1/predictions/dev.jsonl
+variants:
+  # Второй этап выбран по dev первого; не является независимым подтверждением.
+  - {name: c00_repeat_control, operation: repeat}
+  # Контроль строкового (а не токенного) поиска только NAME/ORG.
+  - {name: c01_exact_repeat_name_org, operation: repeat, labels: [NAME, ORG]}
+  - {name: c02_norm_lex_then_repeat, operation: lex_add, normalized: true, propensity: 0.9, repeat_after: true}
+  - {name: c03_strict_lex_then_repeat, operation: lex_add, support: 5, propensity: 1.0, repeat_after: true}
+  - {name: c04_lex_confirm_then_repeat, operation: lex_confirm, repeat_after: true}
+  - {name: c05_s45_confirm_then_repeat, operation: confirm, repeat_after: true}
+  - {name: c06_s45_name_then_repeat, operation: confirm, labels: [NAME], repeat_after: true}
+  - {name: c07_gp020_then_repeat, operation: gp_vote, threshold: 0.2, repeat_after: true}
+  # Сначала повторы старого s62; словарные добавления больше не распространяются.
+  - {name: c08_repeat_then_norm_lex, base: repeats, operation: lex_add, normalized: true, propensity: 0.9}
+  - {name: c09_repeat_then_strict_lex, base: repeats, operation: lex_add, support: 5, propensity: 1.0}
+  - {name: c10_repeat_then_lex_confirm, base: repeats, operation: lex_confirm}
+  - {name: c11_repeat_then_s45, base: repeats, operation: confirm}
+  - {name: c12_repeat_then_s45_name, base: repeats, operation: confirm, labels: [NAME]}
+  - {name: c13_gp_name020_then_repeat, operation: gp_vote, name_threshold: 0.2, repeat_after: true}
+  - {name: c14_s48_repeat, base: s48, operation: repeat}
+  - {name: c15_s45_repeat, base: s45, operation: repeat}

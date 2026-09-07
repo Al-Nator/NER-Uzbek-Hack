@@ -7,6 +7,7 @@
 - [MELM-inspired: s42](FOURTH_MELM.md)
 - [Полные транслитерации: s43 и s44](FOURTH_FULL_TRANSLITERATION.md)
 - [Согласованная silver-разметка: s45 и s46](FOURTH_SILVER.md)
+- [Sol-reviewed транслитерации: s47](FOURTH_SOL_REVIEW.md)
 - [UzNER-100K](#uzner-100k)
 - [Условия подключения](#условия-подключения)
 

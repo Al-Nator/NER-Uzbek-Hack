@@ -1,0 +1,6 @@
+series:
+  name: final-fit-a100
+  stages:
+    - name: final
+      configs:
+        - configs/final/f01_s45_train_dev_silver.yaml

@@ -1,0 +1,6 @@
+series:
+  name: fourth-sol-reviewed-transliteration-a100
+  stages:
+    - name: sol
+      configs:
+        - configs/experiments/a100/s47_bge_gp_translit_sol_review.yaml

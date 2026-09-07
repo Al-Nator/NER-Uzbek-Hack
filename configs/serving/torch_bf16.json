@@ -1,0 +1,10 @@
+{
+  "bundle": "artifacts/serving/s62-c02-v1",
+  "backend": "torch",
+  "precision": "bf16",
+  "window_batch": 8,
+  "cpu_threads": 1,
+  "crf_cpu": true,
+  "crf_compile": true,
+  "sort_windows": false
+}

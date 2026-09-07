@@ -105,6 +105,10 @@ def evaluate_predictions(
 
     mutable_counts = {label: [0, 0, 0] for label in LABELS}
     for hash_value, document in gold_by_hash.items():
+        if any(
+            entity.end > len(document.text) for entity in prediction_by_hash[hash_value].entities
+        ):
+            raise ValueError(f"Предсказание {hash_value!r} выходит за длину исходного текста")
         gold_keys = {_entity_key(entity) for entity in document.entities}
         predicted_keys = {_entity_key(entity) for entity in prediction_by_hash[hash_value].entities}
         for label in LABELS:

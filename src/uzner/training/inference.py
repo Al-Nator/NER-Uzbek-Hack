@@ -31,6 +31,15 @@ class InferenceResult:
     documents_per_second: float
 
 
+@dataclass(frozen=True, slots=True)
+class PredictionResult:
+    """Предсказания и технические показатели без оценки по gold."""
+
+    predictions: tuple[Prediction, ...]
+    loss: float
+    seconds: float
+
+
 def _autocast(device: torch.device, bf16: bool) -> torch.autocast:
     """Создаёт BF16 autocast только для CUDA-вычислений."""
     return torch.autocast(
@@ -41,17 +50,16 @@ def _autocast(device: torch.device, bf16: bool) -> torch.autocast:
 
 
 @torch.inference_mode()
-def run_inference(
+def run_predictions(
     model: TokenTagger,
     loader: DataLoader[WindowBatch],
-    features: tuple[WindowFeature, ...],
     documents: tuple[Document, ...],
-    train_documents: tuple[Document, ...],
     device: torch.device,
     *,
     bf16: bool,
-) -> InferenceResult:
-    """Считает loss, exact spans и все диагностические метрики."""
+    span_weighting: str = "uniform",
+) -> PredictionResult:
+    """Получает exact spans штатным декодером, не вычисляя метрики по gold."""
     model.eval()
     started = perf_counter()
     window_outputs: list[WindowLogits] = []
@@ -91,7 +99,10 @@ def run_inference(
                 probabilities, batch.document_indices, batch.offsets, strict=True
             ):
                 span_output.add(
-                    index, SpanWindowScores(offsets, row[:, : len(offsets), : len(offsets)].clone())
+                    index,
+                    SpanWindowScores(
+                        offsets, row[:, : len(offsets), : len(offsets)].clone(), span_weighting
+                    ),
                 )
             continue
         for row, document_index, offsets in zip(
@@ -113,6 +124,27 @@ def run_inference(
             average_probabilities=model.model_config.head == "softmax",
         )
         predictions = decode_documents(documents, emissions, model)
+    return PredictionResult(
+        predictions=predictions,
+        loss=weighted_loss / loss_weight if loss_weight else 0.0,
+        seconds=perf_counter() - started,
+    )
+
+
+def run_inference(
+    model: TokenTagger,
+    loader: DataLoader[WindowBatch],
+    features: tuple[WindowFeature, ...],
+    documents: tuple[Document, ...],
+    train_documents: tuple[Document, ...],
+    device: torch.device,
+    *,
+    bf16: bool,
+) -> InferenceResult:
+    """Дополняет общий инференс loss и диагностическими dev-метриками."""
+    started = perf_counter()
+    result = run_predictions(model, loader, documents, device, bf16=bf16)
+    predictions = result.predictions
     raw_edges = collect_chunk_edges(features)
     edges = {document.hash: raw_edges.get(index, ()) for index, document in enumerate(documents)}
     evaluation = evaluate_detailed(documents, predictions, train_documents, edges)
@@ -120,7 +152,7 @@ def run_inference(
     return InferenceResult(
         predictions=predictions,
         evaluation=evaluation,
-        loss=weighted_loss / loss_weight if loss_weight else 0.0,
+        loss=result.loss,
         seconds=seconds,
         documents_per_second=len(documents) / seconds if seconds else 0.0,
     )

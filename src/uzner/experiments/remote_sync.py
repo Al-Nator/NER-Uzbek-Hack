@@ -182,6 +182,22 @@ def _publish_local_result(
     from mlflow.tracking import MlflowClient
 
     status = json.loads((run_root / "status.json").read_text(encoding="utf-8"))
+    if status.get("kind") in {
+        "final_fit",
+        "reranker_proposer",
+        "span_reranker",
+        "inference_ablation",
+    }:
+        (run_root / "logs/mlflow_local_run_id.txt").write_text(
+            local_run_id + "\n", encoding="utf-8"
+        )
+        client = MlflowClient(tracking_uri=tracking_uri)
+        client.set_tag(local_run_id, "uzner.transfer.local_run_path", str(run_root))
+        pending = (run_root / ".checkpoint-transfer-pending").exists()
+        client.set_tag(
+            local_run_id, "uzner.transfer.checkpoints", "pending" if pending else "verified"
+        )
+        return
     with (run_root / "logs/history.csv").open(encoding="utf-8") as stream:
         row = next(
             item for item in csv.DictReader(stream) if int(item["epoch"]) == status["best_epoch"]

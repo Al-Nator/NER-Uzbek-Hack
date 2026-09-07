@@ -1,0 +1,10 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      NER_MAX_BATCH_SIZE: ${NER_MAX_BATCH_SIZE:-64}
+      NER_MAX_TEXT_LENGTH: ${NER_MAX_TEXT_LENGTH:-50000}
+      NER_MAX_TOTAL_CHARACTERS: ${NER_MAX_TOTAL_CHARACTERS:-500000}
+      NER_CORS_ORIGINS: ${NER_CORS_ORIGINS:-[]}

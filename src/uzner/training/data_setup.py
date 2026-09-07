@@ -29,12 +29,21 @@ def load_split(
     """Загружает split и применяет только явный smoke-limit."""
     data = load_data_config((project_root / config.data_config).resolve())
     sources = resolve_sources(data, split=split, project_root=project_root)
-    documents = tuple(load_documents(sources))
+    documents = tuple(load_documents(sources, require_entities=True))
+    if not documents:
+        raise ValueError(f"Split {split} не должен быть пустым")
     if limit is not None:
         if limit < 1:
             raise ValueError("Document limit должен быть положительным")
         documents = documents[:limit]
     return documents
+
+
+def validate_split_separation(train: tuple[Document, ...], dev: tuple[Document, ...]) -> None:
+    """Запрещает одинаковые hash в train и оценочном dev обычного эксперимента."""
+    overlap = {doc.hash for doc in train} & {doc.hash for doc in dev}
+    if overlap:
+        raise ValueError(f"Train/dev пересекаются по hash: {sorted(overlap)[:5]}")
 
 
 def make_loader(
@@ -47,6 +56,8 @@ def make_loader(
     num_workers: int,
 ) -> DataLoader[WindowBatch]:
     """Создаёт детерминированный DataLoader окон."""
+    if not features:
+        raise ValueError("Не создано ни одного окна для DataLoader")
     if tokenizer.pad_token_id is None:
         raise ValueError("Tokenizer не содержит pad_token_id")
     generator = torch.Generator()

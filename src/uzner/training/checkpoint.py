@@ -51,10 +51,17 @@ def _replace_directory(temporary: Path, target: Path) -> None:
     """Заменяет checkpoint-каталог с восстанавливаемой резервной копией."""
     backup = target.with_name(target.name + ".backup")
     if backup.exists():
-        shutil.rmtree(backup)
+        raise FileExistsError(f"Сначала восстановите или проверьте резервный checkpoint: {backup}")
+    if not temporary.is_dir():
+        raise FileNotFoundError(temporary)
     if target.exists():
         target.rename(backup)
-    temporary.rename(target)
+    try:
+        temporary.rename(target)
+    except OSError:
+        if backup.exists() and not target.exists():
+            backup.rename(target)
+        raise
     if backup.exists():
         shutil.rmtree(backup)
 

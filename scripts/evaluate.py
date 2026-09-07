@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
-from uzner.data.io import read_jsonl
-from uzner.domain import Document, Prediction
-from uzner.evaluation.metrics import evaluate_predictions
+from uzner.evaluation.files import evaluate_files
 
 
 def parse_args() -> argparse.Namespace:
@@ -23,16 +22,13 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     """Загружает файлы, считает метрики и печатает JSON."""
     args = parse_args()
-    gold = [
-        Document.from_mapping(record, source=args.gold.name) for record in read_jsonl(args.gold)
-    ]
-    predictions = [Prediction.from_mapping(record) for record in read_jsonl(args.predictions)]
-    report = evaluate_predictions(gold, predictions).to_mapping()
+    try:
+        report = evaluate_files(args.gold, args.predictions, args.output).to_mapping()
+    except (ValueError, TypeError, OSError) as error:
+        print(f"eval: {error}", file=sys.stderr)
+        return 2
     rendered = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     print(rendered, end="")
-    if args.output is not None:
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(rendered, encoding="utf-8")
     return 0
 
 

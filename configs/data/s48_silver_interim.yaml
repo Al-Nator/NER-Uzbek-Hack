@@ -1,0 +1,24 @@
+data:
+  max_length: 512
+  stride: 128
+  sources:
+    - name: official_train_v1
+      path: ner_uz_hackathon_participant/data/train.jsonl
+      split: train
+      kind: gold
+      weight: 1.0
+    - name: external_silver_v1
+      path: artifacts/series4/external_silver_v1/silver.jsonl
+      split: train
+      kind: pseudo
+      weight: 1.0
+    - name: expansion_interim_20260907_v1
+      path: artifacts/data/expansion_interim_20260907_v1/silver.jsonl
+      split: train
+      kind: pseudo
+      weight: 1.0
+    - name: official_dev_v1
+      path: ner_uz_hackathon_participant/data/dev.jsonl
+      split: dev
+      kind: gold
+      weight: 1.0

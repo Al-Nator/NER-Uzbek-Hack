@@ -1,5 +1,29 @@
 # Артефакты запуска
 
+## Serving, отдельно от обучающих runs
+
+`artifacts/serving/s62-c02-v1/` — проверяемый SHA-256 bundle трёх исходных
+checkpoint-ов и train-only словаря. Optimizer/training state исключены.
+`reference/` содержит архивные predictions исключительно для offline parity;
+runtime их не читает для ответа. Локальные веса по возможности hard-link,
+их нельзя изменять на месте.
+
+`artifacts/serving/engines-bf16/` — производные A100 TensorRT plans и metadata;
+они не подменяют исходные веса. Engine проверяется по SHA-256 и версии TensorRT.
+Промежуточный ONNX можно пересоздать из bundle и не хранить постоянно.
+
+`artifacts/serving/benchmarks/<variant>/` — полный `summary.json`, predictions,
+parity diff и, для HTTP, индивидуальные latency и проверка повторных прогонов.
+Тяжёлые файлы не идут в Git или MLflow; компактная проверяемая сводка —
+[`reports/serving_a100_20260907.md`](../reports/serving_a100_20260907.md).
+
+## Исследовательские runs
+
+[Posthoc-проверки 07.09.2026](POSTHOC_DECODING.md) сохраняются в `runs/posthoc_…/`:
+resolved config, hashes, source snapshot, полный dev evaluator, изменения spans и MLflow.
+В них нет новых checkpoint-ов и обучающих loss-ов: это явно помеченные проверки
+готовых предсказаний. Сводная таблица — `reports/posthoc_decoding_20260907.md`.
+
 `runs/<run_id>/` — единица воспроизводимости. Каталог не перезаписывается;
 продолжение возможно только через `--resume` из `checkpoints/last`.
 
@@ -73,3 +97,22 @@ MLflow хранит интерактивные ряды и лёгкие копи
 границ окон не рассчитывается, а не подменяется произвольными границами.
 Память и веса не загружаются в MLflow, только лёгкие JSON/логи/source snapshot.
 Полная скорость HTTP-сервиса отдельно ещё не измерена.
+
+## Посылка проверенного ансамбля
+
+`scripts/predict_ensemble.py` применяет три `best`-checkpoint-а из
+`resolved_config.json` выбранного ensemble run последовательно на GPU, затем
+использует тот же `majority_vote`, что и dev-эксперимент. Обучение, подбор
+порогов, оценка по gold и отправка на лидерборд не выполняются.
+
+```bash
+uv run python scripts/predict_ensemble.py \
+  --ensemble-run runs/s62_span_majority_full-targeted-v1 \
+  --input /path/to/public_test_inputs.jsonl \
+  --output-dir artifacts/submissions/s62_public_v1
+```
+
+Новый каталог содержит `predictions.jsonl` для загрузки, `components/*.jsonl`
+с отдельными голосами и `predictions.manifest.json` с SHA-256 входа, выхода,
+весов и tokenizer-ов. Повторная запись существующего каталога запрещена.
+Эти файлы не являются обучающим run и не создают фиктивные метрики в MLflow.

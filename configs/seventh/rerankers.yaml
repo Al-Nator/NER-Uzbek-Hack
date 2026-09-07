@@ -1,0 +1,8 @@
+split_root: artifacts/reranker/s7_holdout_v1
+variants:
+  - run_id: s73_span_reranker_linear_holdout_v1
+    variant: linear
+  - run_id: s74_span_reranker_mlp_holdout_v1
+    variant: mlp
+  - run_id: s75_span_reranker_char_context_holdout_v1
+    variant: char_context

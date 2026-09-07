@@ -43,6 +43,10 @@ def test_transfer_copies_full_metric_history_params_tags_and_artifacts(
     (run_root / "metrics").mkdir(parents=True)
     (run_root / "metrics" / "dev.json").write_text('{"micro_f1": 0.91}\n', encoding="utf-8")
     (run_root / "status.json").write_text('{"status": "complete"}\n', encoding="utf-8")
+    (run_root / "resolved_config.json").write_text('{"variant": "linear"}\n')
+    (run_root / "holdout_protocol.json").write_text('{"selection": "meta_valid"}\n')
+    (run_root / "checkpoints").mkdir()
+    (run_root / "checkpoints/best.pt").write_bytes(b"weights-not-for-mlflow")
     request = MlflowTransferRequest(
         source_uri=source_uri,
         source_run_id=source_run_id,
@@ -73,6 +77,9 @@ def test_transfer_copies_full_metric_history_params_tags_and_artifacts(
     assert destination.list_artifacts(first.destination_run_id, "metrics")[0].path == (
         "metrics/dev.json"
     )
+    artifacts = {item.path for item in destination.list_artifacts(first.destination_run_id, "run")}
+    assert {"run/resolved_config.json", "run/holdout_protocol.json"} <= artifacts
+    assert not destination.list_artifacts(first.destination_run_id, "checkpoints")
 
 
 def test_local_publication_preserves_source_link_and_is_idempotent(tmp_path: Path) -> None:

@@ -104,7 +104,14 @@ def _copy_metrics(
 
 def _log_light_artifacts(client: MlflowClient, run_id: str, root: Path) -> None:
     """Загружает в MLflow только лёгкие run-артефакты."""
-    for name in ("resolved_config.yaml", "metadata.json", "status.json", "artifact_manifest.json"):
+    for name in (
+        "resolved_config.yaml",
+        "resolved_config.json",
+        "metadata.json",
+        "status.json",
+        "artifact_manifest.json",
+        "holdout_protocol.json",
+    ):
         path = root / name
         if path.is_file():
             client.log_artifact(run_id, str(path), artifact_path="run")

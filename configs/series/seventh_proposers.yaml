@@ -1,0 +1,8 @@
+series:
+  name: seventh-holdout-proposers
+  stages:
+  - configs:
+    - configs/seventh/s7p0_bge_holdout_v1.yaml
+    - configs/seventh/s7p1_mdeberta_holdout_v1.yaml
+    - configs/seventh/s7p2_xlmr_holdout_v1.yaml
+    name: proposers

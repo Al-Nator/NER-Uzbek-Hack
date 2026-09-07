@@ -5,12 +5,10 @@ from __future__ import annotations
 import gc
 import math
 from contextlib import suppress
-from dataclasses import replace
 
 import torch
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 
-from uzner.config import load_experiment_config, with_run_suffix
 from uzner.data.spans import span_coverage, with_span_targets
 from uzner.data.windows import build_window_features
 from uzner.evaluation.tokenizer_audit import audit_tokenizer
@@ -25,10 +23,16 @@ from uzner.experiments.mlflow_tracking import MlflowTracker, start_mlflow_run
 from uzner.models.factory import model_class
 from uzner.models.pretrained import resolve_pretrained_snapshot
 from uzner.training import checkpoint, finalization, runtime
-from uzner.training.data_setup import collect_data_hashes, load_split, make_loader
+from uzner.training.data_setup import (
+    collect_data_hashes,
+    load_split,
+    make_loader,
+    validate_split_separation,
+)
 from uzner.training.inference import InferenceResult, run_inference
 from uzner.training.loop import train_epoch
 from uzner.training.optimizer import make_optimizer
+from uzner.training.request_config import resolve_request_config
 from uzner.training.requests import TrainRequest, TrainResult
 from uzner.training.warm_start import initial_checkpoint_metadata, load_initial_checkpoint
 
@@ -36,29 +40,12 @@ from uzner.training.warm_start import initial_checkpoint_metadata, load_initial_
 def train_experiment(request: TrainRequest) -> TrainResult:
     """Выполняет один полный конфигурируемый эксперимент."""
     project_root = request.project_root.resolve()
-    config = with_run_suffix(
-        load_experiment_config(request.config_path.resolve()), request.run_id_suffix
-    )
-    if request.max_epochs is not None:
-        if request.max_epochs < 1:
-            raise ValueError("max_epochs должен быть положительным")
-        config = replace(config, training=replace(config.training, epochs=request.max_epochs))
-    smoke_limited = any(
-        value is not None
-        for value in (
-            request.max_train_documents,
-            request.max_dev_documents,
-            request.max_epochs,
-        )
-    )
-    if smoke_limited and request.output_root_override is None:
-        raise ValueError("Smoke-limit требует отдельный output_root_override")
-    if request.output_root_override is not None:
-        if request.publish_summary:
-            raise ValueError("Smoke/output override нельзя публиковать в сводку")
-        config = replace(config, output_root=str(request.output_root_override.resolve()))
+    config = resolve_request_config(request)
     if config.pipeline != "uzner":
         raise ValueError("Official reference запускается отдельным wrapper-ом")
+    train_documents = load_split(config, project_root, "train", request.max_train_documents)
+    dev_documents = load_split(config, project_root, "dev", request.max_dev_documents)
+    validate_split_separation(train_documents, dev_documents)
     paths = prepare_run_paths(config, project_root=project_root, resume=request.resume)
     logger = RunLogger(config.run_id, paths)
     tracker: MlflowTracker | None = None
@@ -69,14 +56,12 @@ def train_experiment(request: TrainRequest) -> TrainResult:
             config,
             paths,
             project_root,
-            enabled=not smoke_limited,
+            enabled=request.output_root_override is None,
             resume=request.resume,
         )
         logger.attach_tracker(tracker)
         device = runtime.resolve_device(config.training.require_gpu)
         runtime.set_reproducible_seed(config.training.seed)
-        train_documents = load_split(config, project_root, "train", request.max_train_documents)
-        dev_documents = load_split(config, project_root, "dev", request.max_dev_documents)
 
         if request.resume:
             loaded = checkpoint.load_model_checkpoint(paths.last_checkpoint, config, device)

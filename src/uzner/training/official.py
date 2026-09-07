@@ -7,7 +7,7 @@ import json
 import sys
 from argparse import Namespace
 from contextlib import redirect_stderr, redirect_stdout, suppress
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from pathlib import Path
 from time import perf_counter
 from typing import TextIO
@@ -17,11 +17,9 @@ from transformers import AutoTokenizer
 from uzner.config import (
     ExperimentConfig,
     load_data_config,
-    load_experiment_config,
     resolve_sources,
-    with_run_suffix,
 )
-from uzner.data.io import load_documents, read_jsonl
+from uzner.data.io import read_jsonl
 from uzner.data.windows import build_window_features, collect_chunk_edges
 from uzner.domain import Document, Prediction
 from uzner.evaluation.slices import evaluate_detailed
@@ -34,11 +32,12 @@ from uzner.experiments.artifacts import (
 )
 from uzner.experiments.logging import EpochRecord, RunLogger
 from uzner.experiments.mlflow_tracking import MlflowTracker, start_mlflow_run
-from uzner.training.data_setup import collect_data_hashes
+from uzner.training.data_setup import collect_data_hashes, load_split, validate_split_separation
 from uzner.training.engine import TrainRequest, TrainResult
 from uzner.training.finalization import finalize_outputs
 from uzner.training.inference import InferenceResult
 from uzner.training.official_kit import download_official_snapshot, load_official_modules
+from uzner.training.request_config import resolve_request_config
 from uzner.training.runtime import (
     capture_environment,
     collect_runtime_info,
@@ -172,21 +171,15 @@ def _epoch_record(
 def run_official_reference(request: TrainRequest) -> TrainResult:
     """Запускает official train/predict и добавляет единые отчёты."""
     project_root = request.project_root.resolve()
-    config = with_run_suffix(
-        load_experiment_config(request.config_path.resolve()), request.run_id_suffix
-    )
+    config = resolve_request_config(request)
     if config.pipeline != "official_reference":
         raise ValueError("Ожидается pipeline=official_reference")
-    limited = request.max_train_documents is not None or request.max_dev_documents is not None
-    if limited and request.output_root_override is None:
-        raise ValueError("Smoke-limit требует отдельный output_root_override")
-    if request.output_root_override is not None:
-        if request.publish_summary:
-            raise ValueError("Smoke/output override нельзя публиковать в сводку")
-        config = replace(config, output_root=str(request.output_root_override.resolve()))
-    paths = prepare_run_paths(config, project_root=project_root, resume=request.resume)
     if request.resume:
         raise ValueError("Official reference не поддерживает resume")
+    train = load_split(config, project_root, "train", request.max_train_documents)
+    dev = load_split(config, project_root, "dev", request.max_dev_documents)
+    validate_split_separation(train, dev)
+    paths = prepare_run_paths(config, project_root=project_root, resume=False)
     logger = RunLogger(config.run_id, paths)
     tracker: MlflowTracker | None = None
     write_resolved_config(paths.resolved_config, config)
@@ -197,7 +190,7 @@ def run_official_reference(request: TrainRequest) -> TrainResult:
             config,
             paths,
             project_root,
-            enabled=not limited,
+            enabled=request.output_root_override is None,
             resume=False,
         )
         logger.attach_tracker(tracker)
@@ -240,12 +233,6 @@ def run_official_reference(request: TrainRequest) -> TrainResult:
             official_predict.run(prediction_args)
         predict_seconds = perf_counter() - predict_started
 
-        train = tuple(load_documents((("official_train", train_path),)))
-        dev = tuple(load_documents((("official_dev", dev_path),)))
-        if request.max_train_documents is not None:
-            train = train[: request.max_train_documents]
-        if request.max_dev_documents is not None:
-            dev = dev[: request.max_dev_documents]
         predictions = _load_predictions(paths.predictions)
         tokenizer = AutoTokenizer.from_pretrained(paths.best_checkpoint, local_files_only=True)
         evaluation = evaluate_detailed(dev, predictions, train, _edges(dev, tokenizer, config))

@@ -56,13 +56,8 @@ def test_all_experiment_configs_reference_existing_inputs() -> None:
             sources = resolve_sources(data, split=split, project_root=PROJECT_ROOT)
             assert sources
             for name, path in sources:
-                generated = PROJECT_ROOT / "artifacts/melm/s42_melm_v1/train_augmented.jsonl"
-                if (
-                    experiment.run_id == "s42_bge_gp_melm"
-                    and path == generated
-                    and not path.exists()
-                ):
-                    # Генерация предшествует s42: отсутствующий релиз нельзя незаметно пропустить.
+                if path.is_relative_to(PROJECT_ROOT / "artifacts") and not path.exists():
+                    # Производные релизы не входят в Git; обучение обязано требовать их явно.
                     with pytest.raises(FileNotFoundError):
                         load_documents(((name, path),))
                 else:

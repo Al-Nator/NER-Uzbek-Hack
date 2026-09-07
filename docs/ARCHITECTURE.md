@@ -21,6 +21,24 @@ sources -> validation -> tokenization/model -> character spans -> exact scorer
   архитектурную логику.
 - `scripts/` остаётся тонким CLI-слоем без бизнес-логики.
 
+## Финальный serving
+
+`apps/frontend/` и `apps/backend/` отделены от исследований. FastAPI-адаптер
+`app.ensemble:app` вызывает `src/uzner/serving/runtime.py`; все три компонента
+s62 загружаются один раз. Предсказания проходят прежние общие window merge,
+CRF/GP decoding, majority 2/3, train-словарь и точные повторы. Новый evaluator
+или альтернативная логика offsets для сервиса не создаются.
+
+Исполнение отделено от рецепта: `configs/serving/` управляет BF16, CPU CRF,
+компиляцией того же Viterbi-цикла и явно перечисленными TensorRT encoder-ами.
+Отсутствующий engine вызывает ошибку, а не скрытый fallback. TensorRT связывает
+GPU-буферы напрямую; постобработка остаётся общей с PyTorch-веткой.
+
+Один worker последовательно использует общие GPU execution contexts. HTTP не
+блокирует служебные маршруты во время инференса. Веса и train-словарь входят в
+автономный образ; hash запроса не используется как ключ к готовому ответу.
+[Запуск и границы применимости измерений](SERVING.md).
+
 ## Расширение данных
 
 Каждый источник объявляется в data YAML. Поддерживаются `gold`, `synthetic` и

@@ -13,6 +13,28 @@ from uzner.models.transitions import allowed_end, allowed_start, allowed_transit
 INVALID_SCORE = -10_000.0
 
 
+def viterbi_path(
+    emissions: torch.Tensor,
+    start: torch.Tensor,
+    end: torch.Tensor,
+    transitions: torch.Tensor,
+) -> list[int]:
+    """Считает общий Viterbi-путь; та же функция допускает TorchScript на CPU."""
+    score = start + emissions[0]
+    backpointers: list[torch.Tensor] = []
+    for index in range(1, emissions.size(0)):
+        candidates = score[:, None] + transitions
+        score, pointers = candidates.max(dim=0)
+        score = score + emissions[index]
+        backpointers.append(pointers)
+    final = int((score + end).argmax().item())
+    path = [final]
+    for index in range(len(backpointers) - 1, -1, -1):
+        path.append(int(backpointers[index][path[-1]].item()))
+    path.reverse()
+    return path
+
+
 class LinearChainCrf(nn.Module):
     """Обучаемая linear-chain CRF для одной схемы тегов."""
 
@@ -104,17 +126,18 @@ class LinearChainCrf(nn.Module):
         """Декодирует лучший валидный путь для одной последовательности."""
         if emissions.ndim != 2 or emissions.shape[0] == 0:
             raise ValueError("emissions должны иметь форму nonempty sequence x tags")
-        score = self._masked_start() + emissions.float()[0]
-        transitions = self._masked_transitions()
-        backpointers: list[torch.Tensor] = []
-        for emission in emissions.float()[1:]:
-            candidates = score[:, None] + transitions
-            score, pointers = candidates.max(dim=0)
-            score = score + emission
-            backpointers.append(pointers)
-        final = int((score + self._masked_end()).argmax().item())
-        path = [final]
-        for pointers in reversed(backpointers):
-            path.append(int(pointers[path[-1]].item()))
-        path.reverse()
-        return tuple(path)
+        decoder = getattr(self, "_compiled_decode", viterbi_path)
+        return tuple(
+            decoder(
+                emissions.float(),
+                self._masked_start(),
+                self._masked_end(),
+                self._masked_transitions(),
+            )
+        )
+
+    def compile_cpu_decode(self) -> None:
+        """Компилирует только общий Viterbi-цикл, не меняя веса или арифметику."""
+        if self.transitions.device.type != "cpu":
+            raise ValueError("Компилируемый декодер предназначен для CPU")
+        self._compiled_decode = torch.jit.script(viterbi_path)

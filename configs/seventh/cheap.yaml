@@ -1,0 +1,19 @@
+variants:
+  - run_id: s70_s45_vote_swap_v1
+    mode: cached
+    sources:
+      - s45_bge_gp_external_silver_s4-silver-v1
+      - s21_mdeberta_v3_base_bioes_crf_s2-sequence-v1
+      - s31_xlmr_large_global_pointer_a100-continuation-v1
+  - run_id: s7c0_fresh_uniform_control_v1
+    mode: uniform
+    sources: &canonical
+      - s33_bge_global_pointer_low_lr_a100-low-lr-v1
+      - s21_mdeberta_v3_base_bioes_crf_s2-sequence-v1
+      - s31_xlmr_large_global_pointer_a100-continuation-v1
+  - run_id: s71_gp_center_weighting_v1
+    mode: center
+    sources: *canonical
+  - run_id: s72_gp_word_windows_v1
+    mode: word_boundary
+    sources: *canonical
