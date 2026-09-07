@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env*
+*.tsbuildinfo
+tests/
+test-results/
+playwright-report/
+README.md

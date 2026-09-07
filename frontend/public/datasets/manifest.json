@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "chunkSize": 128,
+  "datasets": [
+    {
+      "id": "train",
+      "title": "Обучающая выборка",
+      "count": 13000,
+      "source": "train.jsonl",
+      "revision": "b3281c93aeb2",
+      "sha256": "b3281c93aeb28353384b749627a4a82217cdd250a607a3ea3803363b31718346"
+    },
+    {
+      "id": "dev",
+      "title": "Валидационная выборка",
+      "count": 1500,
+      "source": "dev.jsonl",
+      "revision": "7e5d96a1de83",
+      "sha256": "7e5d96a1de83311e3acb33a3c28ed8e13783141143c8eb83e86fb329a795e4d0"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+.venv/
+.venv-train-windows/
+.cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.env
+.coverage
+htmlcov/
+models/
+.env.*
+!.env.example
+*.safetensors
+*.pt
+*.pth
+*.bin
