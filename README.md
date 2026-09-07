@@ -1,5 +1,8 @@
 # Uzbek NER · exact spans, three complementary models
 
+### Наша команда победила (команда 5):
+<img width="938" height="651" alt="image" src="https://github.com/user-attachments/assets/43c10fcc-c00b-4e1f-b48f-cc3f46054f14" />
+
 Распознавание **организаций, людей и географических объектов** в узбекских,
 русских и смешанных текстах. Латиница и кириллица, длинные документы,
 точные границы в исходной Unicode-строке.
