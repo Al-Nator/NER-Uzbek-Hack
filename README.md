@@ -173,7 +173,8 @@ NER-Uzbek-Hack/
 
 - [Команды организаторам: predict, eval, benchmark, обучение](docs/ORGANIZERS.md)
 - [Serving: запуск, экспорт, совместимость и benchmark](docs/SERVING.md)
-- [Измеренная производительность A100](reports/serving_a100_20260907.md)
+- [Актуальная производительность A100](reports/serving_s21_20260907.md)
+- [Архив ресурсов и передача организаторам](docs/DELIVERY.md)
 - [Словарь, повторы и 71 абляция без переобучения](docs/POSTHOC_DECODING.md)
 - [Архитектура](docs/ARCHITECTURE.md), [артефакты](docs/ARTIFACTS.md), [MLflow](docs/EXPERIMENT_TRACKING.md)
 - [Frontend и backend](apps/README.md)

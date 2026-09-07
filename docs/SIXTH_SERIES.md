@@ -29,7 +29,9 @@
 
 [MLflow s62](http://127.0.0.1:5000/#/experiments/1/runs/6831a535f8984df4b2e417f0876630a2/model-metrics).
 CPU выполняет только комбинацию уже полученных GPU-предсказаний и общую оценку.
-В production нужны три encoder-а: **HTTP latency/throughput ансамбля не измерены**.
+В production нужны три encoder-а. Последующий all-TensorRT HTTP-замер:
+44,2/40,3 сообщения/с на dev/public; 30 запросов/с без ошибок, public p95 0,59 с.
+См. [serving-отчёт](../reports/serving_s21_20260907.md).
 Время голосования без encoder inference нельзя выдавать за скорость сервиса.
 
 Аудит реальных s33/s21/s31 подтвердил дополняемость: s21 возвращает 257 FN s33,
