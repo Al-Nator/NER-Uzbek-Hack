@@ -115,9 +115,20 @@ def test_configuration_freezes_original_three_models():
     config = RuntimeConfig.read(Path("configs/serving/default.json"))
     assert config.precision == "bf16"
     assert config.window_batch == 16
-    assert config.engine_models == ("s33", "s31")
+    assert config.engine_models == ("s33", "s21", "s31")
     assert config.crf_compile
     assert not config.sort_windows
+
+
+def test_hybrid_profile_keeps_rollback():
+    """Сохраняет старый backend без изменения состава и постобработки."""
+    primary = RuntimeConfig.read(Path("configs/serving/default.json"))
+    rollback = RuntimeConfig.read(Path("configs/serving/hybrid_bf16.json"))
+    assert rollback.engine_models == ("s33", "s31")
+    assert rollback.bundle == primary.bundle
+    assert rollback.precision == primary.precision
+    assert rollback.window_batch == primary.window_batch
+    assert rollback.crf_compile == primary.crf_compile
 
 
 @pytest.mark.parametrize("length", [1, 2, 32, 513])

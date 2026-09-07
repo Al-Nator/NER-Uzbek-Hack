@@ -7,8 +7,8 @@
 **Public micro-F1: 0.8922** · **Dev micro-F1: 0.91745** · **3 модели, один API**
 
 [Команды организаторам](docs/ORGANIZERS.md) · [Запуск и A100](docs/SERVING.md) ·
-[Измерения](reports/serving_a100_20260907.md) ·
-[Эксперименты](docs/EXPERIMENTS.md) · [Документация](docs/README.md)
+[Комплект поставки](docs/DELIVERY.md) · [Измерения](reports/serving_s21_20260907.md) ·
+[Эксперименты](docs/EXPERIMENTS.md) · [Документация](#документация)
 
 ## Решение
 
@@ -48,11 +48,10 @@ Dev многократно использовался для отбора; эт�
 
 Нужны Docker с NVIDIA Container Toolkit и GPU. Финальная цель — **A100 80 GB,
 driver 550.90.07 / CUDA 12.4**. Веса не хранятся в Git: перед сборкой нужны
-проверенный bundle `artifacts/serving/s62-c02-v1/` и два TensorRT plan с metadata
-в `artifacts/serving/engines-bf16/`. Здесь они уже подготовлены.
-[Получение bundle и plans](docs/SERVING.md#bundle).
-Есть и [загрузка готового автономного образа](docs/SERVING.md#перенос-готового-образа)
-без повторной сборки; архив передаётся отдельно от Git.
+проверенный bundle `artifacts/serving/s62-c02-v1/` и три TensorRT plan с metadata
+в `artifacts/serving/engines-bf16/`. Они передаются единым архивом
+`uzner-a100-s21-resources-v1.tar.zst` отдельно от Git.
+[Распаковка, проверка и сборка](docs/ORGANIZERS.md#1-окружение-и-сервис).
 
 ```nushell
 docker build -t ner-uz-solution .
@@ -91,25 +90,23 @@ JSONL-пакеты, подсветка сущностей, экспорт отв
 
 ## Производительность
 
-Default — TensorRT BF16 для двух encoder-ов, PyTorch BF16 для mDeBERTa,
+Default — TensorRT BF16 для всех трёх encoder-ов,
 CPU TorchScript CRF. Полный HTTP, включая пред- и постобработку, на A100 80 GB:
 
-| Входы | По одному, сообщений/с | Пакетами по 8, сообщений/с |
+| Входы | По одному, сообщений/с | p50 / p95, мс |
 |---|---:|---:|
-| Dev | 32,36 | 61,35 |
-| Public | 31,07 | 56,44 |
+| Dev | 44,21 | 16,24 / 51,57 |
+| Public | 40,25 | 16,64 / 52,20 |
 
-Пик GPU **6,26 GiB**. Поток 30 одиночных запросов/с прошёл без ошибок:
-public p95 **1,34 с**. Dev-F1 batch=8: **0,917458 → 0,917410** при +20,6%
-throughput; одиночный режим ускорился на 47,5%. Измерительный драйвер **580.173.02**,
-не целевой 550.90.07. Условия, небольшой запас одиночного режима и ограничения:
-[полный отчёт](reports/serving_a100_20260907.md).
-
-**Почему mDeBERTa в PyTorch?** Для s21 сохранён проверенный BF16-путь;
-TensorRT-перенос этого encoder-а пока не подтверждён отдельными замерами
-скорости и exact-span parity. Это граница проверенной оптимизации, а не
-утверждение о несовместимости с TensorRT. Encoder работает на GPU;
-на CPU вынесено только CRF-декодирование с TorchScript.
+Два прохода, batch=1, concurrency=1, загрузка и warmup исключены.
+Прирост к прежнему гибриду: **+35,1% dev / +28,4% public**.
+Поток 30 запросов/с прошёл без ошибок: public p95 **592 мс** с учётом очереди.
+GPU-память процесса: **4936 MiB** (снимок, не пик).
+Dev-F1 batch=1: **0,917114**; batch=8: **0,917291** против **0,917410**
+у гибрида. Это измерения runtime, а не новые результаты public-лидерборда.
+Измерительный драйвер **580.173.02**, не целевой 550.90.07.
+[Условия и полный отчёт](reports/serving_s21_20260907.md).
+Откат: `configs/serving/hybrid_bf16.json`; CRF в обоих вариантах остаётся CPU TorchScript.
 
 ## Разработка и воспроизводимость
 
@@ -169,4 +166,40 @@ NER-Uzbek-Hack/
 
 История отрицательных результатов сохранена: увеличение данных, смена heads
 и обучение на train+dev не объявляются улучшениями без измерений.
-[Навигация по сериям и отчётам](docs/README.md).
+
+## Документация
+
+### Финальная система
+
+- [Команды организаторам: predict, eval, benchmark, обучение](docs/ORGANIZERS.md)
+- [Serving: запуск, экспорт, совместимость и benchmark](docs/SERVING.md)
+- [Измеренная производительность A100](reports/serving_a100_20260907.md)
+- [Словарь, повторы и 71 абляция без переобучения](docs/POSTHOC_DECODING.md)
+- [Архитектура](docs/ARCHITECTURE.md), [артефакты](docs/ARTIFACTS.md), [MLflow](docs/EXPERIMENT_TRACKING.md)
+- [Frontend и backend](apps/README.md)
+
+### Эксперименты — история, не очередь автозапуска
+
+[Общий журнал и результаты](docs/EXPERIMENTS.md) · [Протокол](docs/EXPERIMENT_PROTOCOL.md)
+
+| Серия | Что менялось |
+|---|---|
+| [1](docs/FIRST_SERIES.md) | Базовые encoder-ы и корректный offset pipeline |
+| [2](docs/SECOND_SERIES.md), [2B](docs/ENCODER_CONTINUATION.md) | Sequence-модели, большие encoder-ы, BGE / XLM-V |
+| [3](docs/THIRD_SERIES.md) | Biaffine / GlobalPointer, пороги, короткое продолжение |
+| [4](docs/FOURTH_SERIES.md) | Транслитерации, MELM-inspired, silver |
+| [5](docs/FIFTH_SERIES.md) | Вспомогательные цели, kNN, символьные границы |
+| [6](docs/SIXTH_SERIES.md) | Дополнительные модели и exact-span ансамбль |
+| [7](docs/SEVENTH_SERIES.md) | Защищённый эталон и span-reranker |
+
+[s48](docs/S48_SILVER_INTERIM.md) · [train+dev ансамбль](docs/FINAL_ENSEMBLE.md) ·
+[Sol review](docs/FOURTH_SOL_REVIEW.md). Рецепты из этих документов не заменяют
+подтверждённый s62+c02 автоматически.
+
+### Работа с проектом
+
+- [Удалённые runs, логи, возврат артефактов](docs/REMOTE_EXPERIMENTS.md)
+- [Карточка данных](docs/DATA_CARD.md), [анализ ошибок](docs/ERROR_ANALYSIS.md)
+- [Условия задачи и FAQ](docs/task/README.md)
+- [API](ner_uz_hackathon_participant/API.md) и
+  [правила разметки](ner_uz_hackathon_participant/LABELING_GUIDE.md)

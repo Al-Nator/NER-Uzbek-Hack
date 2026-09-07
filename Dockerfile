@@ -21,6 +21,8 @@ COPY --chown=10001:10001 artifacts/serving/ ./artifacts/serving/
 COPY src/ ./src/
 COPY apps/backend/app/ ./apps/backend/app/
 COPY configs/serving/ ./configs/serving/
+ARG RUNTIME_PROFILE=configs/serving/default.json
+COPY ${RUNTIME_PROFILE} ./configs/serving/default.json
 
 RUN useradd --uid 10001 --create-home ner
 USER ner

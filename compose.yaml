@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ner-uz-solution:a100-final
+    image: ner-uz-solution:a100-s21
     build: .
     gpus: all
     ports:

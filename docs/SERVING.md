@@ -5,11 +5,15 @@ s21 mDeBERTa-v3-base/BIOES-CRF, s31 XLM-R-large/GP. Большинство 2/3,
 нормализованный train-словарь, затем точные повторы. Никакого переобучения,
 включения dev в словарь, смены порогов или обращения к LLM при оптимизации.
 
-[Производительность и quality gate](../reports/serving_a100_20260907.md).
+[Производительность и quality gate](../reports/serving_s21_20260907.md).
 [Отдельная памятка команд организаторам](ORGANIZERS.md).
 
-Default: **s33 и s31 в TensorRT BF16, s21 в PyTorch BF16**, CPU TorchScript CRF,
+Default: **s33, s21 и s31 в TensorRT BF16**, CPU TorchScript CRF,
 до 16 окон за forward. HTTP-пакет и batch окон — разные величины.
+Проверен [s21 TensorRT](../reports/serving_s21_20260907.md):
+профиль `configs/serving/trt_all_bf16.json`, до 40,3 сообщения/с на public
+в одиночном режиме. Все три plan входят в архив ресурсов.
+Прежний гибрид сохранён в `configs/serving/hybrid_bf16.json` для отката.
 Резерв без TensorRT: `configs/serving/torch_bf16.json`; его можно выбрать
 необязательной переменной `UZNER_SERVICE_CONFIG` при запуске того же образа.
 Небольшие численные изменения TensorRT приняты пользователем только ради
@@ -51,7 +55,7 @@ tokenizer-ы, конфиги, словарь и SHA-256 manifest. Повторн
 на новую машину перенесите весь каталог или готовый Docker-образ.
 Hard links локальных весов нельзя редактировать на месте.
 
-Для default TensorRT также нужны `s33.plan`, `s31.plan` и их JSON metadata в
+Для default TensorRT также нужны `s33.plan`, `s21.plan`, `s31.plan` и их JSON metadata в
 `artifacts/serving/engines-bf16/`; они уже перенесены локально с A100 и проверены
 по SHA-256. При подготовке с нуля после bundle выполните
 [экспорт на A100](#воспроизведение-tensorrt), затем `docker build`.
@@ -125,12 +129,14 @@ Runtime требует ровно перечисленные `engine_models`, с
 version. Повторная сборка поверх готового plan запрещена.
 Plans платформозависимы: при смене GPU/версии TensorRT пересоберите и перепроверьте.
 
-Измеренный финальный образ: `ner-uz-solution:a100-final`; его image ID и hashes
-ресурсов зафиксированы в [отчёте](../reports/serving_a100_20260907.md).
+Новый основной образ: `ner-uz-solution:a100-s21`; image ID и hashes
+ресурсов зафиксированы в [отчёте s21](../reports/serving_s21_20260907.md).
 
 ## Перенос готового образа
 
-Архив образа передаётся отдельно от Git. Загрузка на целевой **A100**:
+Это **старый резервный гибрид**, не новый основной вариант.
+Для новой поставки используйте [архив ресурсов и сборку](ORGANIZERS.md).
+При необходимости отката старый архив загружается на **A100**:
 
 ```bash
 sha256sum -c output/ner-uz-solution-a100-final.tar.zst.sha256

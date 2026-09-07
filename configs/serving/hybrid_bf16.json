@@ -7,6 +7,6 @@
   "crf_cpu": true,
   "crf_compile": true,
   "engine_dir": "artifacts/serving/engines-bf16",
-  "engine_models": ["s33", "s21", "s31"],
+  "engine_models": ["s33", "s31"],
   "sort_windows": false
 }

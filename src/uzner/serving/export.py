@@ -9,6 +9,7 @@ from transformers import AutoModel
 
 from uzner.data.io import sha256_file
 from uzner.experiments.artifacts import write_json
+from uzner.serving.deberta_export import export_self_attention
 
 
 class EncoderGraph(nn.Module):
@@ -40,7 +41,7 @@ def export_encoder(checkpoint: Path, output: Path) -> Path:
     model = EncoderGraph(encoder).cuda().eval().requires_grad_(False)
     ids = torch.ones((1, 32), dtype=torch.long, device="cuda") * 5
     mask = torch.ones_like(ids)
-    with torch.inference_mode():
+    with torch.inference_mode(), export_self_attention(encoder):
         torch.onnx.export(
             model,
             (ids, mask),

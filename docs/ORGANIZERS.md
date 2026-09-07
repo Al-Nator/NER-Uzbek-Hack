@@ -3,7 +3,8 @@
 Все команды ниже — **из корня репозитория**, Linux x86_64. `make help` выводит
 краткую памятку. Сервис — замороженный **s62+c02**, три модели, словарь и повторы.
 Git содержит код, но **не веса**; для inference нужен отдельно переданный
-Docker-архив либо bundle и TensorRT plans. [Состав поставки](SERVING.md#bundle).
+архив ресурсов `uzner-a100-s21-resources-v1.tar.zst` и его `.sha256`.
+Это не Docker-образ: образ собирается из репозитория. [Состав поставки](SERVING.md#bundle).
 
 ## 1. Окружение и сервис
 
@@ -12,14 +13,18 @@ NVIDIA GPU, для готовых plans — **A100**, Docker с NVIDIA Container
 Обучение из pretrained впервые скачивает encoder; inference внутри образа офлайн.
 
 ```bash
-make setup-organizers
-sha256sum -c output/ner-uz-solution-a100-final.tar.zst.sha256
-zstd -dc output/ner-uz-solution-a100-final.tar.zst | docker load
+# Положить архив и checksum в корень чистого checkout.
+sha256sum -c uzner-a100-s21-resources-v1.tar.zst.sha256
+tar --zstd -xf uzner-a100-s21-resources-v1.tar.zst
+sha256sum -c artifacts/serving/RELEASE-SHA256SUMS
+docker build -t ner-uz-solution:a100-s21 .
 make serve
 curl -f http://127.0.0.1:8000/healthz
+# Окружение для predict/eval/benchmark, не требуется для docker run:
+make setup-organizers
 ```
 
-`make serve` использует образ `ner-uz-solution:a100-final`; `--wait` ждёт Docker
+`make serve` использует образ `ner-uz-solution:a100-s21`; `--wait` ждёт Docker
 healthcheck. При отсутствии образа Compose собирает корневой Dockerfile — для
 этого нужны bundle/plans и интернет для зависимостей. Веса, словарь и metadata
 включены в образ; mounts и переменные окружения для default не нужны.
