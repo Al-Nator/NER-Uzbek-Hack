@@ -12,7 +12,7 @@
 
 ## Решение
 
-```text
+```nushell
 Исходный текст → окна 512 / overlap 128
                       ├─ BGE-M3-RetroMAE + GlobalPointer  (s33)
                       ├─ mDeBERTa-v3-base + BIOES / CRF   (s21)
@@ -54,7 +54,7 @@ driver 550.90.07 / CUDA 12.4**. Веса не хранятся в Git: пере�
 Есть и [загрузка готового автономного образа](docs/SERVING.md#перенос-готового-образа)
 без повторной сборки; архив передаётся отдельно от Git.
 
-```bash
+```nushell
 docker build -t ner-uz-solution .
 docker run --rm --gpus all -p 8000:8000 ner-uz-solution
 ```
@@ -63,7 +63,7 @@ docker run --rm --gpus all -p 8000:8000 ner-uz-solution
 переменных окружения или внешних файлов. `GET /healthz` — готовность модели,
 `POST /api/v1/predict` — пакетное предсказание. Первый запуск загружает веса.
 
-```bash
+```nushell
 curl http://localhost:8000/api/v1/predict \
   -H 'Content-Type: application/json' \
   --data '[{"hash":"example-001","text":"Ali Toshkent shahrida ishlaydi."}]'
@@ -71,7 +71,7 @@ curl http://localhost:8000/api/v1/predict \
 
 Форма ответа; конкретные сущности определяет модель:
 
-```json
+```nushell
 {"data":[{"hash":"example-001","entities":[{"label":"NAME","start":0,"end":3}]}]}
 ```
 
@@ -80,7 +80,7 @@ curl http://localhost:8000/api/v1/predict \
 
 ### Интерфейс
 
-```bash
+```nushell
 docker compose up --build
 ```
 
@@ -105,9 +105,15 @@ throughput; одиночный режим ускорился на 47,5%. Изм�
 не целевой 550.90.07. Условия, небольшой запас одиночного режима и ограничения:
 [полный отчёт](reports/serving_a100_20260907.md).
 
+**Почему mDeBERTa в PyTorch?** Для s21 сохранён проверенный BF16-путь;
+TensorRT-перенос этого encoder-а пока не подтверждён отдельными замерами
+скорости и exact-span parity. Это граница проверенной оптимизации, а не
+утверждение о несовместимости с TensorRT. Encoder работает на GPU;
+на CPU вынесено только CRF-декодирование с TorchScript.
+
 ## Разработка и воспроизводимость
 
-```bash
+```nushell
 uv sync --extra train --extra serve --group dev
 uv run pytest --no-cov tests/test_serving_contract.py tests/test_posthoc_rules.py
 uv run python scripts/train.py --config configs/experiments/e10_xlmr_base_bio.yaml
@@ -119,16 +125,47 @@ make mlflow
 Каждый run сохраняет config, seed, data hashes, исходники, метрики, predictions
 и запись MLflow. Веса не дублируются в MLflow.
 
-```text
-apps/                    frontend и HTTP-адаптер
-src/uzner/               данные, модели, evaluation, posthoc, serving
-configs/                 воспроизводимые эксперименты и runtime
-scripts/                 обучение, экспорт, проверка, HTTP benchmark
-tests/                   offsets, decoder, метрики, API и serving
-docs/ · reports/         протоколы, решения и проверенные результаты
-runs/ · artifacts/       локальные веса и артефакты; не Git
-ner_uz_hackathon_participant/  неизменённый reference организаторов
+## 📑 Структура репозитория
+
+```nushell
+NER-Uzbek-Hack/
+├── apps/                           # Приложения, отдельно от исследований
+│   ├── frontend/                   # React / TypeScript: тексты, spans, JSONL
+│   └── backend/app/ensemble.py     # FastAPI → финальный ансамбль
+├── src/uzner/                      # Общая воспроизводимая логика
+│   ├── data/                       # Данные, токенизация, окна и offsets
+│   ├── models/                     # Encoder-ы, BIOES / CRF, span-головы
+│   ├── training/                   # Train, resume, checkpoint и inference
+│   ├── evaluation/                 # Exact-span метрики и срезы ошибок
+│   ├── posthoc/                    # Голосование, словарь и повторы
+│   ├── serving/                    # Bundle, TensorRT, HTTP-клиент, benchmark
+│   └── experiments/                # Артефакты, provenance, MLflow, A100
+├── configs/                        # Зафиксированные рецепты и параметры
+│   ├── experiments/                # Обучающие эксперименты
+│   ├── posthoc/                    # Абляции без переобучения
+│   └── serving/default.json        # Финальный runtime s62 + c02
+├── scripts/                        # Командные точки входа
+│   ├── train.py                    # Обучение и продолжение
+│   ├── predict_service.py          # HTTP → predictions.jsonl
+│   ├── evaluate.py                 # Оценка по gold-разметке
+│   ├── benchmark_service.py        # Скорость, latency, GPU-память
+│   └── export_service.py           # Encoder → ONNX → TensorRT
+├── tests/                          # Контракты, offsets, модели и регрессии
+├── docs/ORGANIZERS.md               # Команды и состав поставки
+├── reports/                        # Результаты, абляции и отчёты QA
+├── ner_uz_hackathon_participant/    # Неизменённый комплект организаторов
+├── runs/                           # Локальные runs и checkpoint-ы, вне Git
+├── artifacts/serving/              # Локальные bundle и engines, вне Git
+├── output/                         # Локальные предсказания и Docker-архив
+├── Dockerfile                      # Автономный GPU-сервис с весами
+├── compose.yaml                    # API + веб-интерфейс
+├── Makefile                        # Единые команды организаторам
+├── pyproject.toml                  # Зависимости и настройки инструментов
+└── uv.lock                         # Зафиксированные версии окружения
 ```
+
+Показаны основные каталоги. Большие модельные артефакты передаются отдельно;
+готовый образ уже содержит все ресурсы для автономного инференса.
 
 История отрицательных результатов сохранена: увеличение данных, смена heads
 и обучение на train+dev не объявляются улучшениями без измерений.
